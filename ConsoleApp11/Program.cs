@@ -42,7 +42,7 @@ namespace Cosoleapp3
             var attack = new Skill("Attack", 1, new List<int> {0}, new List<Status>());
             var lasthit = new Skill("Lasthit", 2, new List<int> {0, 1}, new List<Status>());
             var rangedAttack = new Skill("Ranged Attack", 0.75, new List<int> {0, 1, 2}, new List<Status>());
-            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1, 2},
+            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1},
                 new List<Status>() {Status.GetStatus("stun")});
             var cleave = new Skill("Cleave", 0.33, new List<int> {0, 1, 2}, new List<Status>() { }, aoe: true);
             var bleed = new Skill("Bleed", 0.5, new List<int>() {0, 1, 2, 3},
@@ -50,7 +50,7 @@ namespace Cosoleapp3
             var fortify = new Skill("fortify", 0, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("buffArmor")}, true, true);
             var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true);
-            var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 15,
+            var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 5,
                 new List<Skill>() {attack, shieldBash, cleave, fortify});
             var obama = new Character("Obama", 100, 50, 0, 5, 10, 100, 5, new List<Skill>() {attack, bleed, heal});
             var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 10, 5,

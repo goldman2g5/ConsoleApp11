@@ -51,14 +51,18 @@ public static class Ai
         
         bool Control()
         {
-            if (allies.Any(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "stun"))) & subject.Skills.Any(a => a.StatusList.Any(c => c.Type == "stun")))
+            var skillList = subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "stun")).ToList();
+            if (skillList.Any())
             {
-                target = allies.Where(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "stun"))).Where(d => !d.Stunned).ToList();
-                var skillList = subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "stun") & x.Targets.Contains(allies.IndexOf(target[0]))).ToList();
                 skill = skillList[new Random().Next(0, skillList.Count)];
-                target = skill.Aoe ? allies.Where(x => skill.Targets.Contains(allies.IndexOf(x))).ToList() : target;
-                skill.Use(subject, target);
-                return true;
+                if (allies.Any(x => x.StatusList.All(a => a.Type != "stun") & skill.Targets.Contains(allies.IndexOf(x))))
+                {
+                    var targetList = allies.Where(x => x.StatusList.All(a => a.Type != "stun") & skill.Targets.Contains(allies.IndexOf(x))).ToList();
+                    target = new List<Character> {targetList[new Random().Next(0, targetList.Count)]};
+                    target = skill.Aoe ? allies.Where(x => skill.Targets.Contains(allies.IndexOf(x))).ToList() : target;
+                    skill.Use(subject, target);
+                    return true;
+                }
             }
 
             return false;
