@@ -12,7 +12,6 @@ public class Skill
     public List<int> Targets;
     public List<Status> StatusList = new List<Status>();
     private static Dictionary<string, Skill> SkillList = new Dictionary<string, Skill>() {};
-    public string Description;
 
     public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false)
     {

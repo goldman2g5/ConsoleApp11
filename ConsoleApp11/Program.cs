@@ -23,7 +23,7 @@ namespace Cosoleapp3
 
     // КОНТЕНТ
     // ВЫВОДИТЬ ХП ШАНС ПОПАДАНИЯ И УРОН ПРОСЛЕ ВЫБОРА СКИЛЛА
-    // ВЫВОД ИНФЫ ПО ЗАПРОСУ
+    // ВЫВОД ИНФЫ О СКИЛЛАХ ПО ЗАПРОСУ
     // МАКСИМАЛЬНО ИГРАБЕЛЬНЫЙ ВЫВОД НА КОНСОЛЬ
     // МЕНЮ СТАРТА ИГРЫ
     // МЕНЮ ВЫБОРА ПЕРСОНАЖЕЙ
@@ -50,10 +50,10 @@ namespace Cosoleapp3
             var fortify = new Skill("fortify", 0, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("buffArmor")}, true, true);
             var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true);
-            var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 5,
+            var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 30,
                 new List<Skill>() {attack, shieldBash, cleave, fortify});
-            var obama = new Character("Obama", 100, 50, 0, 5, 10, 100, 5, new List<Skill>() {attack, bleed, heal});
-            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 10, 5,
+            var obama = new Character("Obama", 100, 50, 0, 5, 10, 100, 29, new List<Skill>() {attack, bleed, heal});
+            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 5, 28,
                 new List<Skill>() {attack, bleed, heal});
             var enemy1 = new Character("Enemy1", 100, 50, 0, 5, 10, 5, 25,
                 new List<Skill> {rangedAttack, shieldBash, heal});

@@ -43,6 +43,7 @@ public class Game
                 Console.WriteLine($"Turn Order: \n{Misc.GetCharsNames(TurnOrder)}\n");
                 Console.WriteLine($"Acting: {subject.Name}");
                 subject.ProcessStatuses();
+                
                 ClearDead();
                 if (subject.Stunned)
                 {

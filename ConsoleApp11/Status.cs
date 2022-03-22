@@ -52,6 +52,12 @@ public class Status
     
     public void ApplyStatus(Character obj, Status status)
     {
+        obj.Dmg = obj.MaxDmg;
+        obj.Acc = obj.MaxAcc;
+        obj.Dodge = obj.MaxDodge;
+        obj.Initiative = obj.MaxInitiative;
+        obj.Crit = obj.MaxCrit;
+        obj.Armor = obj.MaxArmor;
         if (status.IsInstant)
         {
             status.Fn(obj);

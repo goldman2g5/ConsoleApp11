@@ -9,10 +9,10 @@ public class Misc
         int intInput;
         while (!int.TryParse(input, out intInput) || Convert.ToInt32(input) > limit || Convert.ToInt32(input) < 1)
         {
-            // if (input == -1)
-            // {
-            //     Console.WriteLine($"Battlefield: \n Allies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Allies)}\n Enemies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Enemies)}\n");
-            // }
+            if (input == "info")
+            {
+                Console.WriteLine($"Battlefield: \n Allies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Allies)}\n Enemies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Enemies)}\n");
+            }
             Console.WriteLine(input);
             Console.Write(">> ");
             input = Console.ReadLine();
