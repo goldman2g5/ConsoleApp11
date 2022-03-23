@@ -6,6 +6,7 @@ public class Game
 {
     public List<Character> Allies;
     public List<Character> Enemies;
+    public static Character Subject;
     private static List<Character> TurnOrder = new List<Character>() {};
 
     public Game(List<Character> allies, List<Character> enemies)
@@ -38,6 +39,7 @@ public class Game
             TurnOrder = GetTurnOrder();
             foreach (var subject in TurnOrder)
             {
+                Subject = subject;
                 if (!Allies.Any() | !Enemies.Any()) { break; }
                 if (subject.Dead) {continue;}
                 Console.WriteLine($"Turn Order: \n{Misc.GetCharsNames(TurnOrder)}\n");

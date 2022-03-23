@@ -9,11 +9,12 @@ public class Skill
     public Double Damage;
     public bool UseOnAllies;
     public bool Aoe;
+    public bool MarkDamage;
     public List<int> Targets;
     public List<Status> StatusList = new List<Status>();
     private static Dictionary<string, Skill> SkillList = new Dictionary<string, Skill>() {};
 
-    public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false)
+    public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false, bool markdamage = false)
     {
         Damage = damage;
         Name = name;
@@ -21,6 +22,7 @@ public class Skill
         StatusList = statusList;
         Targets = targets;
         UseOnAllies = useonaliies;
+        MarkDamage = markdamage;
         Aoe = aoe;
     }
 
@@ -38,8 +40,8 @@ public class Skill
                 foreach (var i in StatusList)
                 {
                     i.ApplyStatus(target, i);
+                    Console.WriteLine($"{subject.Name} {i.OnApply}");
                     Thread.Sleep(3000);
-                    i.ApplyStatus(target, i);
                 }
             }
             else
@@ -53,6 +55,10 @@ public class Skill
                 else
                 {
                     damageDealt = Convert.ToInt32(subject.Dmg * Damage * new Random().Next(75, 125) / 100);
+                    if (MarkDamage & target.StatusList.Any(x => x.Type == "mark"))
+                    {
+                        damageDealt *= 2;
+                    }
                     if (Misc.Roll(subject.Crit))
                     {
                         damageDealt *= 2;
@@ -63,7 +69,7 @@ public class Skill
                     Thread.Sleep(3000);
                     foreach (var i in StatusList)
                     {
-                        Console.Write($"{subject.Name} {i.OnApply}");
+                        Console.WriteLine($"{subject.Name} {i.OnApply}");
                         Thread.Sleep(3000);
                         i.ApplyStatus(target, i);
                     }
@@ -105,6 +111,6 @@ public class Skill
     public static string GetInfo(List<Skill> ls)
     {
         return Enumerable.Range(0, ls.Count).Aggregate("", (current, i) => current + $"\n{i + 1}: {ls[i].Name}" +
-                                                                    (ls[i].Damage != 0 ? $"\n{(ls[i].UseOnAllies ? "Heal" : "Damage")}: {ls[i].Damage * 100}%" : "") + $"\nStatus: {ls[i].GetStatuses()}\n");
+                                                                           (ls[i].Damage != 0 ? $"\n{(ls[i].UseOnAllies ? "Heal" : "Damage")}: {ls[i].Damage * 100}%" : "") + $"\nTargets{(ls[i].UseOnAllies ? " Allies" : "")}: {(ls[i].Aoe ? "~" : "")}{ls[i].Targets.Aggregate("", (x, j) => x + $"{j + 1} ").Trim()}" + $"{(ls[i].StatusList.Any() ? $"\nStatus: {ls[i].GetStatuses()}" : "")}\n");
     }
 }

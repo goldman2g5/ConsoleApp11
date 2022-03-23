@@ -1,4 +1,6 @@
-﻿namespace Cosoleapp3;
+﻿using System.Runtime.InteropServices;
+
+namespace Cosoleapp3;
 
 public class Character
 {
@@ -20,10 +22,11 @@ public class Character
     public bool Stunned = false;
     public bool Dead = false;
     public bool IsAi;
+    public string Role;
     public List<Skill> Skills;
     public List<Status> StatusList = new List<Status>();
 
-    public Character(string name, int hp, int dmg, int acc, int dodge, int armor, int crit, int initiative, List<Skill> skills)
+    public Character(string name, int hp, int dmg, int acc, int dodge, int armor, int crit, int initiative, List<Skill> skills, string role = "")
     {
         Hp = hp;
         MaxHp = hp;
@@ -41,12 +44,12 @@ public class Character
         MaxArmor = armor;
         Skills = skills;
         Name = name;
+        Role = role;
     }
     public Skill GetSkill()
     {
         if (!IsAi)
         {
-            // Console.WriteLine($"Select a skill:\n{Skill.GetNames(this)}\n{Skill.GetInfo(Skills)}");
             Console.WriteLine($"Select a skill:\n{Skill.GetNames(this)}");
             return Skills[Misc.VerfiedInput(Skills.Count)];
         }
@@ -100,6 +103,6 @@ public class Character
     
     public string GetStatuses()
     {
-        return StatusList.Aggregate("", (current, i) => current + (i.Name + ", "));
+        return StatusList.Aggregate("", (current, i) => current + (i.Name + " ")).Trim();
     }
 }

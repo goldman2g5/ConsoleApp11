@@ -13,6 +13,10 @@ public class Misc
             {
                 Console.WriteLine($"Battlefield: \n Allies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Allies)}\n Enemies:\n {Misc.GetCharsNamesWithInfo(Program.Game.Enemies)}\n");
             }
+            if (input == "skillinfo")
+            {
+                Console.WriteLine($"Select a skill:\n{Skill.GetNames(Game.Subject)}\n{Skill.GetInfo(Game.Subject.Skills)}");
+            }
             Console.WriteLine(input);
             Console.Write(">> ");
             input = Console.ReadLine();
