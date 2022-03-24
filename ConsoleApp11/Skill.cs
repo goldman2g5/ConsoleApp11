@@ -40,7 +40,7 @@ public class Skill
                 foreach (var i in StatusList)
                 {
                     i.ApplyStatus(target, i);
-                    Console.WriteLine($"{subject.Name} {i.OnApply}");
+                    Console.WriteLine($"{target.Name} {i.OnApply}");
                     Thread.Sleep(3000);
                 }
             }
@@ -69,7 +69,7 @@ public class Skill
                     Thread.Sleep(3000);
                     foreach (var i in StatusList)
                     {
-                        Console.WriteLine($"{subject.Name} {i.OnApply}");
+                        Console.WriteLine($"{target.Name} {i.OnApply}");
                         Thread.Sleep(3000);
                         i.ApplyStatus(target, i);
                     }

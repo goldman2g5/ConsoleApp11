@@ -58,15 +58,15 @@ namespace Cosoleapp3
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 5, 7,
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
-            var enemy1 = new Character("Tank", 100, 50, 0, 5, 10, 5, 25,
+            var enemy1 = new Character("enemy1", 100, 50, 0, 5, 10, 5, 25,
                 new List<Skill> {shieldBash, heal, sniperMark}, role: "Tank");
-            var enemy2 = new Character("Damage Dealer", 100, 50, 0, 5, 10, 5, 10,
+            var enemy2 = new Character("enemy2", 100, 50, 0, 5, 10, 5, 10,
                 new List<Skill> {rangedAttack, attack, cleave, lasthit, shieldBash, heal}, role: "DD");
-            var vestal = new Character("Vestal", 100, 50, 0, 5, 10, 5, 50,
+            var enemy3 = new Character("enemy3", 100, 50, 0, 5, 10, 5, 50,
                 new List<Skill> {attack, alacrity, heal});
 
             Game = new Game(new List<Character>() {hero, obama, joeBaiden},
-                new List<Character>() {enemy1, enemy2, vestal});
+                new List<Character>() {enemy1, enemy2, enemy3});
             Game.Start();
         }
     }
