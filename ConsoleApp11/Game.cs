@@ -55,7 +55,7 @@ public class Game
 
                 if (subject.IsAi)
                 {
-                    Ai.Act(Allies, Enemies, subject);
+                    new Ai(Allies, Enemies, subject).Act();
                 }
                 else
                 {

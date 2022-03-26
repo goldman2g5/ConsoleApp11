@@ -10,15 +10,17 @@ namespace Cosoleapp3
     // #TODO
     // GENERAL
     // СТАТУС И СКИЛЛ ПЕРЕМЕЩЕНИЯ
-    // ДОБВАИТЬ КЛАССЫ СТРОКОЙ В КОНСТРУКТОР ПЕРСОНАЖА
     // ДОБАВИТЬ БРОНЮ В ФОРМУЛЫ РАССЧЕТА УРОНА
     // ДОБАВИТЬ МОДИФИКАТОР ТОЧНОИСТИ К СКИЛЛАМ И ВО ВСЕ ФОРМУЛЫ
+    // ДОБАВИТЬ СТАТУС ЗАЩИТЫ
+    // РИОПСТ 
 
 
     // ИИ
     // ВЫБОР УРОВНЯ СЛОЖНОСТИ
     // ДЕЙТВИЕ САППОРТ - ЗАЩИТНЫЙ/АТАКУЮЩИЙ БАФ/ДЕБАФ ПО ТИПУ И КЛАССУ С РАЗВТВЛЕНИЕМ ЧЕРЕЗ РАНДОМ
     // СОЗДАТЬ КЛАСС ЭКЗЕМПЛЯР ПРИОРИТЕТА ДЕЙТСВИЙ, ПЕРЕДОВАТЬ ЕГО ПРИ СОЗДАНИИ ПЕРСОНАЖА
+    // СЕЙВ С ВОЗМОЖНОСТЯМИ ЗАСВИТЬ СОЮЗНИКА
     // ДОБАВИТЬ В ВЫБОР ЦЕЛИ УЧЕТ БРОНИ И УКЛОНЕНИЯ
 
     // КОНТЕНТ
@@ -29,11 +31,12 @@ namespace Cosoleapp3
     // 3 ПОЛНОЦЕННЫХ БИТВЫ С ПЕРСОНАЖАМИ
 
     // КОД
-    // 
+    // Опционально пустой аргумент статусов
 
     public class Program
     {
         public static Game Game;
+        public static int Difficulty;
 
         static void Main(string[] args)
         {
@@ -42,31 +45,61 @@ namespace Cosoleapp3
             var lasthit = new Skill("Lasthit", 2, new List<int> {0, 1}, new List<Status>());
             var rangedAttack = new Skill("Ranged Attack", 0.75, new List<int> {0, 1, 2}, new List<Status>(), markdamage: true);
             var sniperMark = new Skill("Sniper Mark", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")});
-            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1},
-                new List<Status>() {Status.GetStatus("stun")});
             var cleave = new Skill("Cleave", 0.33, new List<int> {0, 1, 2}, new List<Status>() { }, aoe: true);
             var bleed = new Skill("Bleed", 0.5, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("bleed")});
             var fortify = new Skill("fortify", 0, new List<int>() {0, 1, 2, 3},
-                new List<Status>() {Status.GetStatus("Armor buff")}, true, true);
+                new List<Status>() {Status.GetStatus("ArmorBuff")}, true, true);
             var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true);
-            var alacrity = new Skill("Alacrity", 0, new List<int> {0, 1, 2, 3}, 
-                new List<Status>() { Status.GetStatus("Damage buff"), Status.GetStatus("Crit buff"), Status.GetStatus("Acc buff"), Status.GetStatus("Init buff")}, true);
             var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 30,
-                new List<Skill>() {attack, shieldBash, cleave, fortify, sniperMark, rangedAttack, alacrity});
+                new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack});
             var obama = new Character("Obama", 100, 50, 0, 5, 10, 10, 6, 
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 5, 7,
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
-            var enemy1 = new Character("Tank", 100, 50, 0, 5, 10, 5, 25,
-                new List<Skill> {shieldBash, heal, sniperMark}, role: "Tank");
-            var enemy2 = new Character("Damage Dealer", 100, 50, 0, 5, 10, 5, 10,
-                new List<Skill> {rangedAttack, attack, cleave, lasthit, shieldBash, heal}, role: "DD");
-            var vestal = new Character("Vestal", 100, 50, 0, 5, 10, 5, 50,
-                new List<Skill> {attack, alacrity, heal});
+            
+            var spikedMace = new Skill("Spiked Mace", 1, new List<int> {0, 1}, new List<Status>() {Status.GetStatus("bleed")});
+            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1},
+                new List<Status>() {Status.GetStatus("stun")});
+            var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 5, 40, 10, 12,
+                new List<Skill> {spikedMace, shieldBash}, role: "Tank");
+            
+            var spearStrike = new Skill("Spear Charge", 0.67, new List<int> {0, 1, 2}, new List<Status>() {}, aoe: true);
+            var spearCharge = new Skill("Spear Strike", 1, new List<int> {0, 1, 2}, new List<Status>() {});
+            var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 25, 10, 15,
+                new List<Skill> {spearStrike, spearCharge}, role: "DD");
+            
+            var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")});
+            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, true, aoe: true);
+            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true, aoe: true);
+            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")});
+            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 75, 5, 50,
+                new List<Skill> {bannerstrike, bannerlordrally, unholyheal, bannermark});
+            
+            var crosbowbolt = new Skill("Crosbow Bolt", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {}, markdamage: true);
+            var suppressingfire = new Skill("Suppressing Fire", 0.67, new List<int> {1 ,2 ,3}, new List<Status>() {}, aoe: true);
+            var skeletonArcher = new Character("Skeleton Crossbowman", 100, 65, 0, 10, 20, 15, 10,
+                new List<Skill> {crosbowbolt, suppressingfire});
 
+            // var charlist = new List<Character> {hero, obama, joeBaiden};
+            // var allies = new List<Character>();
+            // while (allies.Count != 4)
+            // {
+            //     Console.WriteLine($"Select Characters \n{Misc.GetCharsNamesWithInfo(charlist)}\n");
+            //     Console.WriteLine($"{Misc.GetCharsNames(allies)}");
+            //     var character = charlist[Misc.VerfiedInput(charlist.Count)];
+            //     charlist.Remove(character);
+            //     allies.Add(character);
+            //     Thread.Sleep(1000);
+            //     Console.Clear();
+            //     Thread.Sleep(1000);
+            // }
+            //
+            // Console.WriteLine("Select a difficulty 0-100\nmore means harder");
+            // Difficulty = Misc.VerfiedInput(100);
+            
             Game = new Game(new List<Character>() {hero, obama, joeBaiden},
-                new List<Character>() {enemy1, enemy2, vestal});
+                new List<Character>() {skeletonVeteran, skeletonSpearman, skeletonArcher, skeletonBannerLord});
             Game.Start();
         }
     }

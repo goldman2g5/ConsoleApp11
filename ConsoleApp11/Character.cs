@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 
 namespace Cosoleapp3;
 
@@ -22,11 +23,12 @@ public class Character
     public bool Stunned = false;
     public bool Dead = false;
     public bool IsAi;
+    public List<Func<bool>> Pattern = new List<Func<bool>>() { };
     public string Role;
     public List<Skill> Skills;
     public List<Status> StatusList = new List<Status>();
 
-    public Character(string name, int hp, int dmg, int acc, int dodge, int armor, int crit, int initiative, List<Skill> skills, string role = "")
+    public Character(string name, int hp, int dmg, int acc, int dodge, int armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
     {
         Hp = hp;
         MaxHp = hp;
@@ -45,6 +47,7 @@ public class Character
         Skills = skills;
         Name = name;
         Role = role;
+        Pattern = pattern;
     }
     public Skill GetSkill()
     {
