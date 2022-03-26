@@ -10,7 +10,7 @@ public class Status
     public bool IsInstant;
     public string Type;
     public string OnApply;
-    private static Dictionary<string, Status> StatusList = new Dictionary<string, Status>();
+    private static Dictionary<string, Status> StatusList = new();
 
     private Status(string name, int duration, Action<Character> fn, string type, string onapply, bool isInstant = false)
     {
@@ -39,25 +39,22 @@ public class Status
             Thread.Sleep(3000);
         }
         
-        void Mark(Character obj)
-        {
-            Console.WriteLine($"{obj.Name} is marked");
-        }
-        
         void Rallybuff(Character obj)
         {
             obj.Initiative += 10;
             obj.Crit += 25;
         }
         
-        void ArmorBuff(Character obj)
-        {
-            obj.Armor += 20;
-        }
+        void Mark(Character obj) => Console.WriteLine($"{obj.Name} is marked");
+
+        void Riposte(Character obj) => Console.WriteLine($"{obj.Name} is riposting");
+        
+        void ArmorBuff(Character obj) => obj.Armor += 20;
         
         AddStatus("stun", 1, Stun, "stun", "is stunned");
         AddStatus("bleed", 2, Bleed, "damage", "is bleeding");
         AddStatus("Mark", 2, Mark, "mark", "is marked");
+        AddStatus("Riposte", 3, Riposte, "riposte", "is riposting");
         AddStatus("Rallybuff", 3, Rallybuff, "agressivebuff", "is empowered", true);
         AddStatus("ArmorBuff", 3, ArmorBuff, "defensivebuff", "is fortyfied", true);
     }
@@ -82,13 +79,10 @@ public class Status
         obj.Crit = obj.MaxCrit;
         obj.Armor = obj.MaxArmor;
         if (status.IsInstant)
-        {
             status.Fn(obj);
-        }
-        if (obj.StatusList.Contains(status))
-        {
+        if (obj.StatusList.Contains(status)) 
             obj.StatusList.Remove(status);
-        }
+        
         obj.StatusList.Add(status);
     }
 }

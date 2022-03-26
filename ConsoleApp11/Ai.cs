@@ -5,7 +5,7 @@ namespace Cosoleapp3;
 
 public class Ai
 {
-    private Dictionary<string, List<Func<bool>>> _patternList = new Dictionary<string, List<Func<bool>>>();
+    private Dictionary<string, List<Func<bool>>> _patternList = new();
     public List<Character> Allies;
     public List<Character> Enemies;
     public Character Subject;
@@ -170,6 +170,23 @@ public class Ai
         return false;
     }
 
+    private bool Riposte()
+    {
+        var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "riposte")).ToList();
+        if (skillList.Any())
+        {
+            skill = skillList[new Random().Next(0, skillList.Count)];
+            if (Subject.StatusList.All(a => a.Type != "riposte"))
+            {
+                target = skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).OrderBy(x => x.Hp).ToList()[0]};
+                skill.Use(Subject, target);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // bool Buff()
     // {
     //     var skillListA = subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "agressivedebuff" & x.StatusList.Any(a => a.Type == "defensivedebuff") & x.UseOnAllies)).ToList();
@@ -192,12 +209,10 @@ public class Ai
     public void Act()
     {
         _patternList.Add("Skeleton Veteran", new List<Func<bool>>() {LastHit, Control, DealDamage});
-        _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, DealDamage});
+        _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, Riposte, DealDamage});
         _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {Mark, Heal, LastHit, Buff, DealDamage});
         _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {TargetMark, LastHit, DealDamage});
         foreach (Func<bool> i in _patternList[Subject.Name].Where(i => i()))
-        {
             break;
-        }
     }
 }

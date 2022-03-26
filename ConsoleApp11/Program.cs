@@ -13,7 +13,6 @@ namespace Cosoleapp3
     // ДОБАВИТЬ БРОНЮ В ФОРМУЛЫ РАССЧЕТА УРОНА
     // ДОБАВИТЬ МОДИФИКАТОР ТОЧНОИСТИ К СКИЛЛАМ И ВО ВСЕ ФОРМУЛЫ
     // ДОБАВИТЬ СТАТУС ЗАЩИТЫ
-    // РИОПСТ 
 
 
     // ИИ
@@ -22,6 +21,7 @@ namespace Cosoleapp3
     // СОЗДАТЬ КЛАСС ЭКЗЕМПЛЯР ПРИОРИТЕТА ДЕЙТСВИЙ, ПЕРЕДОВАТЬ ЕГО ПРИ СОЗДАНИИ ПЕРСОНАЖА
     // СЕЙВ С ВОЗМОЖНОСТЯМИ ЗАСВИТЬ СОЮЗНИКА
     // ДОБАВИТЬ В ВЫБОР ЦЕЛИ УЧЕТ БРОНИ И УКЛОНЕНИЯ
+    // ПЕРЕПИСАТЬ ТАРГЕТИНГ ИСПОЛЬЗУЯ THENBY
 
     // КОНТЕНТ
     // ВЫВОДИТЬ ХП ШАНС ПОПАДАНИЯ И УРОН ПРОСЛЕ ВЫБОРА СКИЛЛА
@@ -64,10 +64,11 @@ namespace Cosoleapp3
             var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 5, 40, 10, 12,
                 new List<Skill> {spikedMace, shieldBash}, role: "Tank");
             
-            var spearStrike = new Skill("Spear Charge", 0.67, new List<int> {0, 1, 2}, new List<Status>() {}, aoe: true);
-            var spearCharge = new Skill("Spear Strike", 1, new List<int> {0, 1, 2}, new List<Status>() {});
+            var spearCharge = new Skill("Spear Charge", 0.67, new List<int> {0, 1, 2}, new List<Status>() {}, aoe: true);
+            var spearStrike = new Skill("Spear Strike", 1, new List<int> {0, 1, 2}, new List<Status>() {});
+            var spearRiposte = new Skill("Riposte", 0.5, new List<int> {0, 1, 2, 4}, new List<Status>() {Status.GetStatus("Riposte")}, buffself: true);
             var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 25, 10, 15,
-                new List<Skill> {spearStrike, spearCharge}, role: "DD");
+                new List<Skill> {spearStrike, spearCharge, spearRiposte}, role: "DD");
             
             var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")});
             var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, true, aoe: true);

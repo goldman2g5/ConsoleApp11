@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Xml.Schema;
 
 namespace Cosoleapp3;
 
@@ -10,11 +11,12 @@ public class Skill
     public bool UseOnAllies;
     public bool Aoe;
     public bool MarkDamage;
+    public bool BuffSelf;
     public List<int> Targets;
-    public List<Status> StatusList = new List<Status>();
-    private static Dictionary<string, Skill> SkillList = new Dictionary<string, Skill>() {};
+    public List<Status> StatusList;
+    private static Dictionary<string, Skill> SkillList = new();
 
-    public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false, bool markdamage = false)
+    public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false, bool markdamage = false, bool buffself = false)
     {
         Damage = damage;
         Name = name;
@@ -23,6 +25,7 @@ public class Skill
         Targets = targets;
         UseOnAllies = useonaliies;
         MarkDamage = markdamage;
+        BuffSelf = buffself;
         Aoe = aoe;
     }
 
@@ -39,8 +42,11 @@ public class Skill
                 Thread.Sleep(3000);
                 foreach (var i in StatusList)
                 {
-                    Status.ApplyStatus(target, i);
-                    Console.WriteLine($"{target.Name} {i.OnApply}");
+                    if (BuffSelf) {
+                        Status.ApplyStatus(subject, i);
+                        Console.WriteLine($"{subject.Name} {i.OnApply}"); } else {
+                        Status.ApplyStatus(target, i);
+                        Console.WriteLine($"{target.Name} {i.OnApply}");  }
                     Thread.Sleep(3000);
                 }
             }
@@ -67,11 +73,18 @@ public class Skill
                     target.TakeDamage(damageDealt);
                     Console.WriteLine(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}" : $"{subject.Name} used {Name} on {target.Name}\n{target.Name}");
                     Thread.Sleep(3000);
+                    if (target.StatusList.Any(x => x.Type == "riposte"))
+                    {
+                        new Skill("riposte attack", 1, new List<int> {0, 1, 2, 3}, new List<Status>()).Use(target, new List<Character>() {subject});
+                    }
                     foreach (var i in StatusList)
                     {
-                        Console.WriteLine($"{target.Name} {i.OnApply}");
+                        if (BuffSelf) { 
+                            Status.ApplyStatus(subject, i);
+                            Console.WriteLine($"{subject.Name} {i.OnApply}"); } else {
+                            Status.ApplyStatus(target, i);
+                            Console.WriteLine($"{target.Name} {i.OnApply}");  }
                         Thread.Sleep(3000);
-                        Status.ApplyStatus(target, i);
                     }
                 }
             }
