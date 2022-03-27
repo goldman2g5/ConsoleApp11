@@ -9,6 +9,8 @@ public class Skill
     public string Name;
     public Double Damage;
     public bool UseOnAllies;
+    public bool UseOnSelf;
+    public bool IsMoveSkill;
     public bool Aoe;
     public bool MarkDamage;
     public bool BuffSelf;
@@ -18,8 +20,8 @@ public class Skill
     public List<Status> StatusList = new();
 
     public Skill(string name, double damage = 0, List<int>? targets = null, List<Status>? statusList = null,
-        List<int>? usablefrom = null, bool useonaliies = false, bool aoe = false, bool markdamage = false,
-        bool buffself = false, int move = 0)
+        List<int>? usablefrom = null, bool useonaliies = false, bool useonself = false, bool aoe = false, bool markdamage = false,
+        bool buffself = false, bool isMoveSkill = false, int move = 0)
     {
         Damage = damage;
         Name = name;
@@ -30,10 +32,12 @@ public class Skill
         if (usablefrom != null)
             UsableFrom = usablefrom;
         UseOnAllies = useonaliies;
+        UseOnSelf = useonself;
         MarkDamage = markdamage;
         BuffSelf = buffself;
         Aoe = aoe;
         Move = move;
+        IsMoveSkill = isMoveSkill;
     }
 
     public void Use(Character subject, List<Character> targets)
@@ -63,7 +67,25 @@ public class Skill
                     Console.WriteLine($"{target.Name} {i.OnApply}");
                 }
             }
-            else
+
+            if (UseOnSelf)
+            {
+                if (IsMoveSkill)
+                {
+                    Console.WriteLine($"What position to move: 1 - {Program.Game.Allies.Count}");
+                    Move = Misc.VerfiedInput(Program.Game.Allies.Count);
+                    ref var allies = ref Program.Game.Allies;
+                    foreach (int i in Enumerable.Range(1, Move < 0 ? Move * -1 : Move ))
+                    {
+                        if (allies.IndexOf(target) == 3 & Move > 0 ||
+                            allies.IndexOf(target) == 0 & Move < 0) { break; }
+                        (allies[allies.IndexOf(target)], allies[allies.IndexOf(target) + (Move < 0 ? -1 : 1)]) = (allies[allies.IndexOf(target) + (Move < 0 ? -1 : 1)], allies[allies.IndexOf(target)]);
+                    }
+                    
+                }
+            }
+
+            if (!(!UseOnAllies & !UseOnSelf)) continue;
             {
                 Console.WriteLine($"{subject.Name} used {Name} on {target.Name}");
                 Thread.Sleep(3000);
@@ -145,9 +167,10 @@ public class Skill
         targetTeam = UseOnAllies ? allies : enemies;
         targetTeam = targetTeam.Where(x => Targets.Contains(targetTeam.IndexOf(x))).ToList();
         if (Aoe)
-        {
             return targetTeam;
-        }
+
+        if (IsMoveSkill)
+            return new List<Character> {Game.Subject};
 
         Console.WriteLine($"Select a target:\n{Misc.GetCharsNames(targetTeam)}");
         return new List<Character> {targetTeam[Misc.VerfiedInput(targetTeam.Count)]};

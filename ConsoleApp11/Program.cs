@@ -29,6 +29,7 @@ namespace Cosoleapp3
     // 3 ПОЛНОЦЕННЫХ БИТВЫ С ПЕРСОНАЖАМИ
 
     // КОД
+    // УЛУЧШИТЬ ЛОГИКУ ПРИМЕНЕНИЯ НА СЕБЯ/СОЮЗНИКОВ/ВРАГОВ
 
     public class Program
     {
@@ -45,12 +46,13 @@ namespace Cosoleapp3
             var cleave = new Skill("Cleave", 0.33, new List<int> {0, 1, 2}, new List<Status>() { }, aoe: true);
             var bleed = new Skill("Bleed", 0.5, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("bleed")});
+            var move = new Skill("Move", useonself: true, isMoveSkill: true);
             var fortify = new Skill("fortify", 0, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("ArmorBuff")}, useonaliies: true, aoe: true);
             var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true);
             var unholyGuard = new Skill("Unholy Guard", statusList: new List<Status> {Status.GetStatus("Guard")}, useonaliies: true);
             var hero = new Character("Hero", 100, 100, 0, 5, 0.40, 0, 30,
-                new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack, unholyGuard});
+                new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack, unholyGuard, move});
             var obama = new Character("Obama", 100, 50, 0, 5, 0.10, 10, 6, 
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 0.10, 5, 29,
