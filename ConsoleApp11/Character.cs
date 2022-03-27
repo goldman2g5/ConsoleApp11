@@ -23,10 +23,10 @@ public class Character
     public bool Stunned = false;
     public bool Dead = false;
     public bool IsAi;
-    public List<Func<bool>> Pattern = new List<Func<bool>>() { };
+    public List<Func<bool>> Pattern = new() { };
     public string Role;
     public List<Skill> Skills;
-    public List<Status> StatusList = new List<Status>();
+    public List<Status> StatusList = new();
 
     public Character(string name, int hp, int dmg, int acc, int dodge, double armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
     {
@@ -52,12 +52,9 @@ public class Character
     public Skill GetSkill()
     {
         var usableSkills = Skills.Where(x => x.UsableFrom.Contains(Program.Game.Allies.IndexOf(this))).ToList();
-        if (!IsAi)
-        {
-            Console.WriteLine($"Select a skill:\n{Skill.GetNames(usableSkills)}");
-            return usableSkills[Misc.VerfiedInput(usableSkills.Count)];
-        }
-        return usableSkills[new Random().Next(Skills.Count)];
+        if (IsAi) return usableSkills[new Random().Next(Skills.Count)];
+        Console.WriteLine($"Select a skill:\n{Skill.GetNames(usableSkills)}");
+        return usableSkills[Misc.VerfiedInput(usableSkills.Count)];
     }
     
     public void ProcessStatuses()

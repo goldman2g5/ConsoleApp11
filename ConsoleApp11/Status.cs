@@ -64,7 +64,7 @@ public class Status
 
     private static void AddStatus(string name, int duration, Action<Character> fn, string type, string onapply, bool isinstant = false)
     {
-        Status statusToAdd = new Status(name, duration, fn, type, onapply, isinstant);
+        var statusToAdd = new Status(name, duration, fn, type, onapply, isinstant);
         StatusList.Add(statusToAdd.Name, statusToAdd);
     }
 

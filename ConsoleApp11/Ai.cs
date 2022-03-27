@@ -37,14 +37,16 @@ public class Ai
         Console.WriteLine("Lasthit");
         var targetList = Allies.Where(x => x.Hp < x.MaxHp * 0.5).OrderBy(a => a.Hp).ToList();
         var skillList = Subject.Skills.Where(a => !a.UseOnAllies & a.Damage != 0).OrderByDescending(a => a.Damage).ToList();
+        List<Skill> skillListT;
         if (!targetList.Any()) return false;
         {
             foreach (var i in targetList)
             {
-                skillList = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
-                if (!skillList.Any()) continue;
+                skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
+                if (!skillListT.Any()) continue;
                 {
-                    skillList[0].Use(Subject, skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character>() {i});
+                    skill = skillList[0];
+                    skillListT[0].Use(Subject, skill.Aoe ? Allies.Where(x => skillList[0].Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character>() {i});
                     return true;
                 }
             }
@@ -56,6 +58,7 @@ public class Ai
     {
         var skillList = Subject.Skills.Where(x =>
             x.StatusList.Any(a => a.Type == "stun") & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        List<Skill> skillListT;
         if (!skillList.Any()) return false;
         {
             foreach (var i in Allies
@@ -64,10 +67,10 @@ public class Ai
                          .ThenByDescending(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "guard")))
                          .ThenByDescending(x => x.Skills.Any(a => a.UseOnAllies & a.Damage != 0)).ToList())
             {
-                skillList = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
-                if (!skillList.Any()) continue;
+                skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
+                if (skillListT.Any())
                 {
-                    skillList[0].Use(Subject, skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character>() {i});
+                    skillListT[0].Use(Subject, skill.Aoe ? Allies.Where(x => skillListT[0].Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {i});
                     return true;
                 }
             }
@@ -125,8 +128,6 @@ public class Ai
                 return true;
             }
         }
-
-        return false;
     }
 
     private bool Riposte()
