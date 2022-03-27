@@ -11,8 +11,6 @@ namespace Cosoleapp3
     // GENERAL
     // ДОПИСАТЬ ОГРАНИЧЕНИЯ ПРИМЕНЕНИЯ СКИЛОВ В ИИ => СТАТУС И СКИЛЛ ПЕРЕМЕЩЕНИЯ
     // ДОБАВИТЬ БРОНЮ В ФОРМУЛЫ РАССЧЕТА УРОНА
-    // ДОБАВИТЬ МОДИФИКАТОР ТОЧНОИСТИ К СКИЛЛАМ И ВО ВСЕ ФОРМУЛЫ
-    // ДОБАВИТЬ СТАТУС ЗАЩИТЫ
 
 
     // ИИ
@@ -21,6 +19,7 @@ namespace Cosoleapp3
     // СЕЙВ С ВОЗМОЖНОСТЯМИ ЗАСВИТЬ СОЮЗНИКА
     // ДОБАВИТЬ В ВЫБОР ЦЕЛИ УЧЕТ БРОНИ И УКЛОНЕНИЯ
     // ПЕРЕПИСАТЬ ТАРГЕТИНГ ИСПОЛЬЗУЯ THENBY
+    // ИСПОЛЬЗОВАНИЕ СКИЛЛА ПЕРЕМЕЩЕНИЯ ПО ОЦЕНКИ ДОСТУПНЫХ СКИЛЛОВ
 
     // КОНТЕНТ
     // ВЫВОДИТЬ ХП ШАНС ПОПАДАНИЯ И УРОН ПРОСЛЕ ВЫБОРА СКИЛЛА
@@ -30,7 +29,6 @@ namespace Cosoleapp3
     // 3 ПОЛНОЦЕННЫХ БИТВЫ С ПЕРСОНАЖАМИ
 
     // КОД
-    // Опционально пустой аргумент статусов
 
     public class Program
     {
@@ -40,7 +38,7 @@ namespace Cosoleapp3
         static void Main(string[] args)
         {
             Status.GenerateStatuses();
-            var attack = new Skill("Attack", 1, new List<int> {0}, new List<Status>(), usablefrom: new List<int>() {1, 2, 3});
+            var attack = new Skill("Attack", 1, new List<int> {0}, new List<Status>(), move: 1);
             var lasthit = new Skill("Lasthit", 2, new List<int> {0, 1}, new List<Status>());
             var rangedAttack = new Skill("Ranged Attack", 0.75, new List<int> {0, 1, 2}, new List<Status>(), markdamage: true);
             var sniperMark = new Skill("Sniper Mark", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")});
@@ -55,7 +53,7 @@ namespace Cosoleapp3
                 new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack, unholyGuard});
             var obama = new Character("Obama", 100, 50, 0, 5, 0.10, 10, 6, 
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
-            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 0.10, 5, 7,
+            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 0.10, 5, 29,
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             
             var spikedMace = new Skill("Spiked Mace", targets: new List<int> {0, 1}, statusList: new List<Status>() {Status.GetStatus("bleed")});
@@ -73,7 +71,7 @@ namespace Cosoleapp3
             var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true);
             var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true);
             var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {1, 2, 3, 4});
-            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 50,
+            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 5,
                 new List<Skill> {bannerstrike, bannerlordrally, unholyheal, bannermark});
             
             var crosbowbolt = new Skill("Crosbow Bolt", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {}, markdamage: true);

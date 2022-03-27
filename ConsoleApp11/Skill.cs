@@ -95,23 +95,13 @@ public class Skill
                     }
 
                     target.TakeDamage(damageDealt);
-                    Console.WriteLine(damageDealt != 0
-                        ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}"
-                        : "");
+                    Console.WriteLine(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}" : "");
                     Thread.Sleep(3000);
                     if (target.StatusList.Any(x => x.Type == "riposte"))
                     {
                         new Skill("riposte attack", 1, new List<int> {0, 1, 2, 3}, new List<Status>()).Use(target,
                             new List<Character>() {subject});
                     }
-
-                    // if (Move != 0)
-                    // {
-                    //     foreach (var _ in Enumerable.Range(1, ((Move ))))
-                    //     {
-                    //         
-                    //     }
-                    // }
 
                     foreach (var i in StatusList)
                     {
@@ -125,6 +115,22 @@ public class Skill
                         Status.ApplyStatus(target, i);
                         Console.WriteLine($"{target.Name} {i.OnApply}");
                     }
+
+                    if (Move == 0) continue;
+                    {
+                        Console.WriteLine($"{target.Name} is " + (Move > 0 ? "Pushed back " : "Pulled in ") + "by " + (Move > 0 ? $"{Move}" : $"{Move * -1}"));
+                        ref var allies = ref Program.Game.Allies;
+                        ref var enemies = ref Program.Game.Enemies;
+                        var targetTeam = Program.Game.Allies.Contains(target) ? allies : enemies;
+                        foreach (int i in Enumerable.Range(1, Move < 0 ? Move * -1 : Move ))
+                        {
+                            if (targetTeam.IndexOf(target) == 3 & Move > 0 ||
+                                targetTeam.IndexOf(target) == 0 & Move < 0) { break; }
+                            (targetTeam[targetTeam.IndexOf(target)], targetTeam[targetTeam.IndexOf(target) + (Move < 0 ? -1 : 1)]) = (targetTeam[targetTeam.IndexOf(target) + (Move < 0 ? -1 : 1)], targetTeam[targetTeam.IndexOf(target)]);
+                        }
+                    }
+                    
+                    
                 }
             }
         }

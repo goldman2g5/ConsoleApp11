@@ -70,7 +70,8 @@ public class Ai
                 skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
                 if (skillListT.Any())
                 {
-                    skillListT[0].Use(Subject, skill.Aoe ? Allies.Where(x => skillListT[0].Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {i});
+                    skill = skillListT[0];
+                    skill.Use(Subject, skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {i});
                     return true;
                 }
             }
@@ -190,7 +191,7 @@ public class Ai
     {
         _patternList.Add("Skeleton Veteran", new List<Func<bool>>() {LastHit, Control, DealDamage});
         _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, Riposte, DealDamage});
-        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {Control, Mark, Heal, LastHit, DealDamage});
+        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {Mark, Heal, LastHit, DealDamage});
         _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {TargetMark, LastHit, DealDamage});
         foreach (Func<bool> i in _patternList[Subject.Name].Where(i => i()))
             break;
