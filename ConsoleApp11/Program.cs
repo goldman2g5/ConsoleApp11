@@ -9,7 +9,7 @@ namespace Cosoleapp3
 {
     // #TODO
     // GENERAL
-    // СТАТУС И СКИЛЛ ПЕРЕМЕЩЕНИЯ
+    // ДОПИСАТЬ ОГРАНИЧЕНИЯ ПРИМЕНЕНИЯ СКИЛОВ В ИИ => СТАТУС И СКИЛЛ ПЕРЕМЕЩЕНИЯ
     // ДОБАВИТЬ БРОНЮ В ФОРМУЛЫ РАССЧЕТА УРОНА
     // ДОБАВИТЬ МОДИФИКАТОР ТОЧНОИСТИ К СКИЛЛАМ И ВО ВСЕ ФОРМУЛЫ
     // ДОБАВИТЬ СТАТУС ЗАЩИТЫ
@@ -18,7 +18,6 @@ namespace Cosoleapp3
     // ИИ
     // ВЫБОР УРОВНЯ СЛОЖНОСТИ
     // ДЕЙТВИЕ САППОРТ - ЗАЩИТНЫЙ/АТАКУЮЩИЙ БАФ/ДЕБАФ ПО ТИПУ И КЛАССУ С РАЗВТВЛЕНИЕМ ЧЕРЕЗ РАНДОМ
-    // СОЗДАТЬ КЛАСС ЭКЗЕМПЛЯР ПРИОРИТЕТА ДЕЙТСВИЙ, ПЕРЕДОВАТЬ ЕГО ПРИ СОЗДАНИИ ПЕРСОНАЖА
     // СЕЙВ С ВОЗМОЖНОСТЯМИ ЗАСВИТЬ СОЮЗНИКА
     // ДОБАВИТЬ В ВЫБОР ЦЕЛИ УЧЕТ БРОНИ И УКЛОНЕНИЯ
     // ПЕРЕПИСАТЬ ТАРГЕТИНГ ИСПОЛЬЗУЯ THENBY
@@ -41,7 +40,7 @@ namespace Cosoleapp3
         static void Main(string[] args)
         {
             Status.GenerateStatuses();
-            var attack = new Skill("Attack", 1, new List<int> {0}, new List<Status>());
+            var attack = new Skill("Attack", 1, new List<int> {0}, new List<Status>(), usablefrom: new List<int>() {1, 2, 3});
             var lasthit = new Skill("Lasthit", 2, new List<int> {0, 1}, new List<Status>());
             var rangedAttack = new Skill("Ranged Attack", 0.75, new List<int> {0, 1, 2}, new List<Status>(), markdamage: true);
             var sniperMark = new Skill("Sniper Mark", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")});
@@ -49,38 +48,38 @@ namespace Cosoleapp3
             var bleed = new Skill("Bleed", 0.5, new List<int>() {0, 1, 2, 3},
                 new List<Status>() {Status.GetStatus("bleed")});
             var fortify = new Skill("fortify", 0, new List<int>() {0, 1, 2, 3},
-                new List<Status>() {Status.GetStatus("ArmorBuff")}, true, true);
-            var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true);
-            var hero = new Character("Hero", 100, 70, 0, 5, 40, 0, 30,
-                new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack});
-            var obama = new Character("Obama", 100, 50, 0, 5, 10, 10, 6, 
+                new List<Status>() {Status.GetStatus("ArmorBuff")}, useonaliies: true, aoe: true);
+            var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true);
+            var unholyGuard = new Skill("Unholy Guard", statusList: new List<Status> {Status.GetStatus("Guard")}, useonaliies: true);
+            var hero = new Character("Hero", 100, 100, 0, 5, 0.40, 0, 30,
+                new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack, unholyGuard});
+            var obama = new Character("Obama", 100, 50, 0, 5, 0.10, 10, 6, 
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
-            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 10, 5, 7,
+            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 0.10, 5, 7,
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             
-            var spikedMace = new Skill("Spiked Mace", 1, new List<int> {0, 1}, new List<Status>() {Status.GetStatus("bleed")});
-            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1},
-                new List<Status>() {Status.GetStatus("stun")});
-            var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 5, 40, 10, 12,
+            var spikedMace = new Skill("Spiked Mace", targets: new List<int> {0, 1}, statusList: new List<Status>() {Status.GetStatus("bleed")});
+            var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1}, new List<Status>() {Status.GetStatus("stun")});
+            var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 5, 0.4, 10, 12,
                 new List<Skill> {spikedMace, shieldBash}, role: "Tank");
             
             var spearCharge = new Skill("Spear Charge", 0.67, new List<int> {0, 1, 2}, new List<Status>() {}, aoe: true);
             var spearStrike = new Skill("Spear Strike", 1, new List<int> {0, 1, 2}, new List<Status>() {});
             var spearRiposte = new Skill("Riposte", 0.5, new List<int> {0, 1, 2, 4}, new List<Status>() {Status.GetStatus("Riposte")}, buffself: true);
-            var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 25, 10, 15,
+            var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 0.25, 10, 15,
                 new List<Skill> {spearStrike, spearCharge, spearRiposte}, role: "DD");
             
             var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")});
-            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, true, aoe: true);
-            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), true, aoe: true);
-            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")});
-            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 75, 5, 50,
+            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true);
+            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true);
+            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {1, 2, 3, 4});
+            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 50,
                 new List<Skill> {bannerstrike, bannerlordrally, unholyheal, bannermark});
             
             var crosbowbolt = new Skill("Crosbow Bolt", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {}, markdamage: true);
             var suppressingfire = new Skill("Suppressing Fire", 0.67, new List<int> {1 ,2 ,3}, new List<Status>() {}, aoe: true);
-            var skeletonArcher = new Character("Skeleton Crossbowman", 100, 65, 0, 10, 20, 15, 10,
-                new List<Skill> {crosbowbolt, suppressingfire});
+            var skeletonArcher = new Character("Skeleton Crossbowman", 100, 65, 0, 10, 0.20, 15, 10,
+                new List<Skill> {crosbowbolt, suppressingfire}, role: "DD");
 
             // var charlist = new List<Character> {hero, obama, joeBaiden};
             // var allies = new List<Character>();

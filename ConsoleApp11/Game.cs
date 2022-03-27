@@ -60,7 +60,7 @@ public class Game
                 else
                 {
                     var skill = subject.GetSkill();
-                    skill.Use(subject, skill.GetTargets(subject));
+                    skill.Use(subject, skill.GetTargets());
                 }
                 ClearDead();
                 Thread.Sleep(5000);

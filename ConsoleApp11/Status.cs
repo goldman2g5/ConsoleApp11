@@ -49,12 +49,15 @@ public class Status
 
         void Riposte(Character obj) => Console.WriteLine($"{obj.Name} is riposting");
         
-        void ArmorBuff(Character obj) => obj.Armor += 20;
+        void Guard(Character obj) => Console.WriteLine($"{obj.Name} is riposting");
+        
+        void ArmorBuff(Character obj) => obj.Armor += 0.2;
         
         AddStatus("stun", 1, Stun, "stun", "is stunned");
         AddStatus("bleed", 2, Bleed, "damage", "is bleeding");
         AddStatus("Mark", 2, Mark, "mark", "is marked");
         AddStatus("Riposte", 3, Riposte, "riposte", "is riposting");
+        AddStatus("Guard", 3, Guard, "guard", "is guarded");
         AddStatus("Rallybuff", 3, Rallybuff, "agressivebuff", "is empowered", true);
         AddStatus("ArmorBuff", 3, ArmorBuff, "defensivebuff", "is fortyfied", true);
     }

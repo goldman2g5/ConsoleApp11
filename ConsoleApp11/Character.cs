@@ -16,8 +16,8 @@ public class Character
     public int MaxDodge;
     public int Crit;
     public int MaxCrit;
-    public int Armor;
-    public int MaxArmor;
+    public double Armor;
+    public double MaxArmor;
     public int Initiative;
     public int MaxInitiative;
     public bool Stunned = false;
@@ -28,7 +28,7 @@ public class Character
     public List<Skill> Skills;
     public List<Status> StatusList = new List<Status>();
 
-    public Character(string name, int hp, int dmg, int acc, int dodge, int armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
+    public Character(string name, int hp, int dmg, int acc, int dodge, double armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
     {
         Hp = hp;
         MaxHp = hp;
@@ -51,12 +51,13 @@ public class Character
     }
     public Skill GetSkill()
     {
+        var usableSkills = Skills.Where(x => x.UsableFrom.Contains(Program.Game.Allies.IndexOf(this))).ToList();
         if (!IsAi)
         {
-            Console.WriteLine($"Select a skill:\n{Skill.GetNames(this)}");
-            return Skills[Misc.VerfiedInput(Skills.Count)];
+            Console.WriteLine($"Select a skill:\n{Skill.GetNames(usableSkills)}");
+            return usableSkills[Misc.VerfiedInput(usableSkills.Count)];
         }
-        return Skills[new Random().Next(Skills.Count)];
+        return usableSkills[new Random().Next(Skills.Count)];
     }
     
     public void ProcessStatuses()

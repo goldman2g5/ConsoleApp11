@@ -12,17 +12,20 @@ public class Skill
     public bool Aoe;
     public bool MarkDamage;
     public bool BuffSelf;
-    public List<int> Targets;
-    public List<Status> StatusList;
-    private static Dictionary<string, Skill> SkillList = new();
+    public List<int> Targets = new() {0, 1 ,2 ,3};
+    public List<int> UsableFrom = new() {0, 1 ,2 ,3};
+    public List<Status> StatusList = new();
 
-    public Skill(string name, Double damage, List<int> targets, List<Status> statusList, bool useonaliies = false, bool aoe = false, bool markdamage = false, bool buffself = false)
+    public Skill(string name, double damage = 0, List<int>? targets = null, List<Status>? statusList = null, List<int>? usablefrom = null, bool useonaliies = false, bool aoe = false, bool markdamage = false, bool buffself = false)
     {
         Damage = damage;
         Name = name;
-        UseOnAllies = useonaliies;
-        StatusList = statusList;
-        Targets = targets;
+        if (targets != null)
+            Targets = targets;
+        if (statusList != null)
+            StatusList = statusList;
+        if (usablefrom != null)
+            UsableFrom = usablefrom;
         UseOnAllies = useonaliies;
         MarkDamage = markdamage;
         BuffSelf = buffself;
@@ -31,8 +34,9 @@ public class Skill
 
     public void Use(Character subject, List<Character> targets)
     {
-        foreach (var target in targets)
+        foreach (var t in targets)
         {
+            var target = t;
             int damageDealt;
             if (UseOnAllies)
             {
@@ -42,12 +46,14 @@ public class Skill
                 Thread.Sleep(3000);
                 foreach (var i in StatusList)
                 {
-                    if (BuffSelf) {
+                    if (BuffSelf)
+                    {
                         Status.ApplyStatus(subject, i);
-                        Console.WriteLine($"{subject.Name} {i.OnApply}"); } else {
-                        Status.ApplyStatus(target, i);
-                        Console.WriteLine($"{target.Name} {i.OnApply}");  }
-                    Thread.Sleep(3000);
+                        Console.WriteLine($"{subject.Name} {i.OnApply}");
+                        continue;
+                    }
+                    Status.ApplyStatus(target, i);
+                    Console.WriteLine($"{target.Name} {i.OnApply}");
                 }
             }
             else
@@ -60,18 +66,23 @@ public class Skill
                 }
                 else
                 {
-                    damageDealt = Convert.ToInt32(subject.Dmg * Damage * new Random().Next(75, 125) / 100);
-                    if (MarkDamage & target.StatusList.Any(x => x.Type == "mark"))
+                    if (target.StatusList.Any(x => x.Type == "guard"))
                     {
-                        damageDealt *= 2;
+                        Console.WriteLine("guard");
+                        target = (Program.Game.Allies.Contains(target) ? Program.Game.Allies : Program.Game.Enemies).Find(x =>
+                            x.Skills.Any(a => a.StatusList.Any(b => b.Type == "guard")));
                     }
+                    damageDealt = Convert.ToInt32(subject.Dmg * Damage * (1.0 - target.Armor));
+                    if (MarkDamage & target.StatusList.Any(x => x.Type == "mark"))
+                        damageDealt *= 2;
                     if (Misc.Roll(subject.Crit))
                     {
                         damageDealt *= 2;
                         Console.WriteLine("Critical Strike!");
                     }
+                    
                     target.TakeDamage(damageDealt);
-                    Console.WriteLine(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}" : $"{subject.Name} used {Name} on {target.Name}\n{target.Name}");
+                    Console.WriteLine(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}" : "");
                     Thread.Sleep(3000);
                     if (target.StatusList.Any(x => x.Type == "riposte"))
                     {
@@ -79,29 +90,25 @@ public class Skill
                     }
                     foreach (var i in StatusList)
                     {
-                        if (BuffSelf) { 
+                        if (BuffSelf)
+                        {
                             Status.ApplyStatus(subject, i);
-                            Console.WriteLine($"{subject.Name} {i.OnApply}"); } else {
-                            Status.ApplyStatus(target, i);
-                            Console.WriteLine($"{target.Name} {i.OnApply}");  }
-                        Thread.Sleep(3000);
+                            Console.WriteLine($"{subject.Name} {i.OnApply}");
+                            continue;
+                        }
+                        Status.ApplyStatus(target, i);
+                        Console.WriteLine($"{target.Name} {i.OnApply}");
                     }
                 }
             }
         }
     }
 
-    public List<Character> GetTargets(Character subject)
+    public List<Character> GetTargets()
     {
         var allies = Program.Game.Allies;
         var enemies = Program.Game.Enemies;
         List<Character> targetTeam;
-        if (subject.IsAi) 
-        {
-            targetTeam = UseOnAllies ? enemies : allies;
-            if (Aoe) { return targetTeam.Where(x => Targets.Contains(targetTeam.IndexOf(x))).ToList(); }
-            return new List<Character> {targetTeam[new Random().Next(0, targetTeam.Count)]};
-        }
         Thread.Sleep(3000);
         targetTeam = UseOnAllies ? allies : enemies;
         targetTeam = targetTeam.Where(x => Targets.Contains(targetTeam.IndexOf(x))).ToList();
@@ -110,9 +117,9 @@ public class Skill
         return new List<Character> {targetTeam[Misc.VerfiedInput(targetTeam.Count)]};
     }
 
-    public static string GetNames(Character subj)
+    public static string GetNames(List<Skill> ls)
     {
-        return Enumerable.Range(0, subj.Skills.Count).Aggregate("", (current, i) => current + $"{i + 1}: {subj.Skills[i].Name} ");
+        return Enumerable.Range(0, ls.Count).Aggregate("", (current, i) => current + $"{i + 1}: {ls[i].Name} ");
         
     }
     
