@@ -23,8 +23,8 @@ public class Character
     public bool Stunned = false;
     public bool Dead = false;
     public bool IsAi;
-    public List<Func<bool>> Pattern = new() { };
     public string Role;
+    public List<int> BestPositon;
     public List<Skill> Skills;
     public List<Status> StatusList = new();
 
@@ -47,7 +47,7 @@ public class Character
         Skills = skills;
         Name = name;
         Role = role;
-        Pattern = pattern;
+        BestPositon = Enumerable.Range(0, 3).Where(x => Skills.All(a => a.UsableFrom.Contains(x))).ToList();
     }
     public Skill GetSkill()
     {

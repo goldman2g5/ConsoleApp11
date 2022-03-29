@@ -40,6 +40,11 @@ public class Game
             foreach (var subject in TurnOrder)
             {
                 Subject = subject;
+                foreach (var i in Subject.BestPositon)
+                {
+                    Console.WriteLine(i);
+                }
+                
                 if (!Allies.Any() | !Enemies.Any()) { break; }
                 if (subject.Dead) {continue;}
                 Console.WriteLine($"Turn Order: \n{Misc.GetCharsNames(TurnOrder)}\n");

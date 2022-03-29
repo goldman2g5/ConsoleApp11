@@ -144,6 +144,35 @@ public class Ai
         }
     }
 
+    private bool Move()
+    {
+        if (Subject.BestPositon.Contains(Enemies.IndexOf(Subject))) return false;
+        {
+            List<List<Character>> tempList = new();
+            foreach (var move in new [] {-3, -2, -1, 1, 2 ,3 })
+            {
+                Console.WriteLine(move);
+                var enemies  = Program.Game.Enemies;
+                foreach (var _ in Enumerable.Range(1, move < 0 ? move * -1 : move ))
+                {
+                    if (enemies.IndexOf(Subject) == 3 & move > 0 ||
+                        enemies.IndexOf(Subject) == 0 & move < 0) { break; }
+                    (enemies[enemies.IndexOf(Subject)], enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)]) = (enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)], enemies[enemies.IndexOf(Subject)]);
+                }
+                tempList.Add(enemies);
+                foreach (var i in enemies)
+                {
+                    Console.WriteLine(i.Name);
+                }
+
+                Console.WriteLine();
+            }
+            Program.Game.Enemies = tempList.OrderBy(x => Subject.BestPositon.Contains(x.IndexOf(Subject))).ToList()[0];
+            Console.WriteLine($"{Subject.Name} moved to position {Program.Game.Enemies.IndexOf(Subject) + 1}");
+            return true;
+        }
+    }
+
         // private bool Buff()
     // {
     //     Console.WriteLine("Buff");
@@ -193,7 +222,7 @@ public class Ai
         _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, Riposte, DealDamage});
         _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {Mark, Heal, LastHit, DealDamage});
         _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {TargetMark, LastHit, DealDamage});
-        foreach (Func<bool> i in _patternList[Subject.Name].Where(i => i()))
+        foreach (Func<bool> _ in _patternList[Subject.Name].Where(i => i()))
             break;
     }
 }

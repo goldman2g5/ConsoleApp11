@@ -69,11 +69,11 @@ namespace Cosoleapp3
             var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 0.25, 10, 15,
                 new List<Skill> {spearStrike, spearCharge, spearRiposte}, role: "DD");
             
-            var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")});
-            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true);
-            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true);
-            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {1, 2, 3, 4});
-            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 5,
+            var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")}, usablefrom: new List<int>() {3});
+            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true, usablefrom: new List<int>() {3});
+            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true, usablefrom: new List<int>() {3});
+            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {3});
+            var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 50,
                 new List<Skill> {bannerstrike, bannerlordrally, unholyheal, bannermark});
             
             var crosbowbolt = new Skill("Crosbow Bolt", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {}, markdamage: true);

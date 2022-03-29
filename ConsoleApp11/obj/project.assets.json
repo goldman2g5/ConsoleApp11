@@ -8,19 +8,19 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\HOME\\.nuget\\packages\\": {}
+    "C:\\Users\\mi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\HOME\\RiderProjects\\project_mocha\\ConsoleApp11\\ConsoleApp11.csproj",
+      "projectUniqueName": "C:\\Users\\mi\\RiderProjects\\project_mocha2\\ConsoleApp11\\ConsoleApp11.csproj",
       "projectName": "ConsoleApp11",
-      "projectPath": "C:\\Users\\HOME\\RiderProjects\\project_mocha\\ConsoleApp11\\ConsoleApp11.csproj",
-      "packagesPath": "C:\\Users\\HOME\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\HOME\\RiderProjects\\project_mocha\\ConsoleApp11\\obj\\",
+      "projectPath": "C:\\Users\\mi\\RiderProjects\\project_mocha2\\ConsoleApp11\\ConsoleApp11.csproj",
+      "packagesPath": "C:\\Users\\mi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\mi\\RiderProjects\\project_mocha2\\ConsoleApp11\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\HOME\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\mi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -58,7 +58,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Users\\HOME\\.dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\mi\\.dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }
