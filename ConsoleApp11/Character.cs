@@ -12,8 +12,8 @@ public class Character
     public int MaxDmg;
     public int Acc;
     public int MaxAcc;
-    public int Dodge;
-    public int MaxDodge;
+    public double Dodge;
+    public double MaxDodge;
     public int Crit;
     public int MaxCrit;
     public double Armor;
@@ -28,7 +28,7 @@ public class Character
     public List<Skill> Skills;
     public List<Status> StatusList = new();
 
-    public Character(string name, int hp, int dmg, int acc, int dodge, double armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
+    public Character(string name, int hp, int dmg, int acc, double dodge, double armor, int crit, int initiative, List<Skill> skills, string role = "", List<Func<bool>> pattern = null)
     {
         Hp = hp;
         MaxHp = hp;
@@ -57,9 +57,10 @@ public class Character
         return usableSkills[Misc.VerfiedInput(usableSkills.Count)];
     }
     
+    
     public void ProcessStatuses()
     {
-        List<Status> temp = new List<Status>(StatusList);
+        var temp = new List<Status>(StatusList);
         foreach (var i in StatusList)
         {
             if (!i.IsInstant)
@@ -105,5 +106,10 @@ public class Character
     public string GetStatuses()
     {
         return StatusList.Aggregate("", (current, i) => current + (i.Name + " ")).Trim();
+    }
+
+    public int GetEhp()
+    {
+        return Convert.ToInt32(Hp * (1.0 - Armor) * (1.0 - Dodge));
     }
 }

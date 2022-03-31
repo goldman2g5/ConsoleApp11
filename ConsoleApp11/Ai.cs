@@ -22,27 +22,28 @@ public class Ai
     private bool DealDamage()
     {
         Console.WriteLine("DealDamage");
-        var skillList = Subject.Skills.Where(x => !x.UseOnAllies & x.Damage != 0).ToList();
-        skill = skillList[new Random().Next(0, skillList.Count)];
-        target = skill.Aoe
-            ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList()
-            : new List<Character>
-                {Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).OrderBy(x => x.Hp).ToList()[0]};
-        skill.Use(Subject, target);
-        return true;
+        var skillList = Subject.Skills.Where(x => !x.UseOnAllies & x.Damage != 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        if (!skillList.Any()) return false;
+        {
+            skill = skillList[new Random().Next(0, skillList.Count)];
+            skill.Use(Subject, skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList()
+                : new List<Character>
+                    {Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).OrderBy(x => x.Hp * (1.0 - x.Armor) * (1.0 - (x.Dodge + Subject.Acc * 0.01))).ToList()[0]});
+            return true;
+        }
+
     }
 
-    private bool LastHit()
+    private bool TargetLowHp()
     {
         Console.WriteLine("Lasthit");
-        var targetList = Allies.Where(x => x.Hp < x.MaxHp * 0.5).OrderBy(a => a.Hp).ToList();
-        var skillList = Subject.Skills.Where(a => !a.UseOnAllies & a.Damage != 0).OrderByDescending(a => a.Damage).ToList();
-        List<Skill> skillListT;
+        var targetList = Allies.Where(x => x.Hp < x.MaxHp * 0.5).OrderBy(a => a.Hp * (1.0 - a.Armor) * (1.0 - (a.Dodge + Subject.Acc * 0.01))).ToList();
+        var skillList = Subject.Skills.Where(a => !a.UseOnAllies & a.Damage != 0 & a.UsableFrom.Contains(Enemies.IndexOf(Subject))).OrderByDescending(a => a.Damage).ToList();
         if (!targetList.Any()) return false;
         {
             foreach (var i in targetList)
             {
-                skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
+                var skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
                 if (!skillListT.Any()) continue;
                 {
                     skill = skillList[0];
@@ -53,12 +54,25 @@ public class Ai
             return false;
         }
     }
+    
+    private bool LastHit()
+    {
+        Console.WriteLine("Lasthit");
+        foreach (var i in Allies)
+        {
+            foreach (var j in Subject.Skills.Where(j => (i.Hp * (1.0 - i.Armor)) - (Subject.Dmg * j.Damage) < 0 & j.UsableFrom.Contains(Enemies.IndexOf(Subject)) & j.Targets.Contains(Allies.IndexOf(i))).OrderByDescending(x => x.Damage))
+            {
+                j.Use(Subject, new List<Character>() {i});
+                return true;
+            }
+        }
+        return false;
+    }
 
     private bool Control()
     {
         var skillList = Subject.Skills.Where(x =>
             x.StatusList.Any(a => a.Type == "stun") & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
-        List<Skill> skillListT;
         if (!skillList.Any()) return false;
         {
             foreach (var i in Allies
@@ -67,8 +81,8 @@ public class Ai
                          .ThenByDescending(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "guard")))
                          .ThenByDescending(x => x.Skills.Any(a => a.UseOnAllies & a.Damage != 0)).ToList())
             {
-                skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
-                if (skillListT.Any())
+                var skillListT = skillList.Where(x => x.Targets.Contains(Allies.IndexOf(i))).ToList();
+                if (!skillListT.Any()) continue;
                 {
                     skill = skillListT[0];
                     skill.Use(Subject, skill.Aoe ? Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {i});
@@ -144,34 +158,40 @@ public class Ai
         }
     }
 
-    private bool Move()
-    {
-        if (Subject.BestPositon.Contains(Enemies.IndexOf(Subject))) return false;
-        {
-            List<List<Character>> tempList = new();
-            foreach (var move in new [] {-3, -2, -1, 1, 2 ,3 })
-            {
-                Console.WriteLine(move);
-                var enemies  = Program.Game.Enemies;
-                foreach (var _ in Enumerable.Range(1, move < 0 ? move * -1 : move ))
-                {
-                    if (enemies.IndexOf(Subject) == 3 & move > 0 ||
-                        enemies.IndexOf(Subject) == 0 & move < 0) { break; }
-                    (enemies[enemies.IndexOf(Subject)], enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)]) = (enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)], enemies[enemies.IndexOf(Subject)]);
-                }
-                tempList.Add(enemies);
-                foreach (var i in enemies)
-                {
-                    Console.WriteLine(i.Name);
-                }
-
-                Console.WriteLine();
-            }
-            Program.Game.Enemies = tempList.OrderBy(x => Subject.BestPositon.Contains(x.IndexOf(Subject))).ToList()[0];
-            Console.WriteLine($"{Subject.Name} moved to position {Program.Game.Enemies.IndexOf(Subject) + 1}");
-            return true;
-        }
-    }
+    // private bool Move()
+    // {
+    //     if (Subject.BestPositon.Contains(Enemies.IndexOf(Subject))) return false;
+    //     {
+    //         List<List<Character>> tempList = new();
+    //         foreach (int move in new [] {-3, -2, -1, 1, 2 ,3 })
+    //         {
+    //             Console.WriteLine(move);
+    //             var enemies  = Program.Game.Enemies;
+    //             foreach (int _ in Enumerable.Range(1, move < 0 ? move * -1 : move ))
+    //             {
+    //                 if (enemies.IndexOf(Subject) == 3 & move > 0 ||
+    //                     enemies.IndexOf(Subject) == 0 & move < 0) { break; }
+    //                 (enemies[enemies.IndexOf(Subject)], enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)]) = (enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)], enemies[enemies.IndexOf(Subject)]);
+    //             }
+    //             tempList.Add(enemies);
+    //             foreach (var i in enemies)
+    //             {
+    //                 Console.WriteLine(i.Name);
+    //             }
+    //             
+    //             Console.WriteLine();
+    //         }
+    //
+    //         foreach (var i in Subject.BestPositon)
+    //         {
+    //             Console.WriteLine(i);
+    //         }
+    //         Console.WriteLine(tempList.Count);
+    //         Program.Game.Enemies = tempList.OrderBy(x => x.Count(a => a.BestPositon.Contains(x.IndexOf(a)))).ToList()[0];
+    //         Console.WriteLine($"{Subject.Name} moved to position {Program.Game.Enemies.IndexOf(Subject) + 1}");
+    //         return true;
+    //     }
+    // }
 
         // private bool Buff()
     // {
@@ -218,10 +238,10 @@ public class Ai
     
     public void Act()
     {
-        _patternList.Add("Skeleton Veteran", new List<Func<bool>>() {LastHit, Control, DealDamage});
-        _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, Riposte, DealDamage});
-        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {Mark, Heal, LastHit, DealDamage});
-        _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {TargetMark, LastHit, DealDamage});
+        _patternList.Add("Skeleton Veteran", new List<Func<bool>>() {LastHit, TargetLowHp, Control, DealDamage});
+        _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, TargetLowHp, Riposte, DealDamage});
+        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {LastHit, Mark, Heal, TargetLowHp, DealDamage});
+        _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {LastHit, TargetMark, TargetLowHp, DealDamage});
         foreach (Func<bool> _ in _patternList[Subject.Name].Where(i => i()))
             break;
     }

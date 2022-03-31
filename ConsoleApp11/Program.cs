@@ -51,28 +51,28 @@ namespace Cosoleapp3
                 new List<Status>() {Status.GetStatus("ArmorBuff")}, useonaliies: true, aoe: true);
             var heal = new Skill("Heal", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true);
             var unholyGuard = new Skill("Unholy Guard", statusList: new List<Status> {Status.GetStatus("Guard")}, useonaliies: true);
-            var hero = new Character("Hero", 100, 100, 0, 5, 0.40, 0, 30,
+            var hero = new Character("Hero", 100, 100, 0, 0.05, 0.4, 0, 30,
                 new List<Skill>() {attack, cleave, fortify, sniperMark, rangedAttack, unholyGuard, move});
-            var obama = new Character("Obama", 100, 50, 0, 5, 0.10, 10, 6, 
+            var obama = new Character("Obama", 100, 50, 0, 0.05, 0.10, 10, 6, 
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
-            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 5, 0.10, 5, 29,
+            var joeBaiden = new Character("JoeBaiden", 80, 50, 0, 0.05, 0.10, 5, 29,
                 new List<Skill>() {attack, bleed, heal, sniperMark, rangedAttack});
             
             var spikedMace = new Skill("Spiked Mace", targets: new List<int> {0, 1}, statusList: new List<Status>() {Status.GetStatus("bleed")});
             var shieldBash = new Skill("Shield Bash", 0.5, new List<int> {0, 1}, new List<Status>() {Status.GetStatus("stun")});
-            var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 5, 0.4, 10, 12,
+            var skeletonVeteran = new Character("Skeleton Veteran", 150, 60, 0, 0.05, 0.4, 10, 12,
                 new List<Skill> {spikedMace, shieldBash}, role: "Tank");
             
             var spearCharge = new Skill("Spear Charge", 0.67, new List<int> {0, 1, 2}, new List<Status>() {}, aoe: true);
             var spearStrike = new Skill("Spear Strike", 1, new List<int> {0, 1, 2}, new List<Status>() {});
             var spearRiposte = new Skill("Riposte", 0.5, new List<int> {0, 1, 2, 4}, new List<Status>() {Status.GetStatus("Riposte")}, buffself: true);
-            var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 15, 0.25, 10, 15,
+            var skeletonSpearman = new Character("Skeleton Spearman", 115, 50, 0, 0.15, 0.25, 10, 15,
                 new List<Skill> {spearStrike, spearCharge, spearRiposte}, role: "DD");
             
-            var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")}, usablefrom: new List<int>() {3});
-            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true, usablefrom: new List<int>() {3});
-            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true, usablefrom: new List<int>() {3});
-            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {3});
+            var bannerstrike = new Skill("Unexpected attack", 1, new List<int> {0, 1 ,2 ,3}, new List<Status>() {Status.GetStatus("stun")}, usablefrom: new List<int>() {0, 2});
+            var bannerlordrally = new Skill("Rally To The Flame", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Rallybuff")}, useonaliies: true, aoe: true, usablefrom: new List<int>() {0});
+            var unholyheal = new Skill("Unholy Restoration", 1, new List<int> {0, 1, 2, 3}, new List<Status>(), useonaliies: true, aoe: true, usablefrom: new List<int>() {0});
+            var bannermark = new Skill("Mark for death", 0, new List<int> {0, 1, 2, 3}, new List<Status>() {Status.GetStatus("Mark")}, usablefrom: new List<int>() {0});
             var skeletonBannerLord = new Character("Skeleton Banner Lord", 85, 50, 0, 25, 0.75, 5, 50,
                 new List<Skill> {bannerstrike, bannerlordrally, unholyheal, bannermark});
             
@@ -99,7 +99,7 @@ namespace Cosoleapp3
             // Difficulty = Misc.VerfiedInput(100);
             
             Game = new Game(new List<Character>() {hero, obama, joeBaiden},
-                new List<Character>() {skeletonVeteran, skeletonSpearman, skeletonArcher, skeletonBannerLord});
+                new List<Character>() {skeletonVeteran, skeletonSpearman, skeletonBannerLord, skeletonArcher});
             Game.Start();
         }
     }

@@ -90,7 +90,7 @@ public class Skill
                 Console.WriteLine($"{subject.Name} used {Name} on {target.Name}");
                 Thread.Sleep(3000);
 
-                if (Misc.Roll(target.Dodge - subject.Acc))
+                if (Misc.Roll(Convert.ToInt32(target.Dodge * 100 - subject.Acc)))
                 {
                     Console.WriteLine($"{target.Name} dodges");
                 }
