@@ -47,7 +47,7 @@ public class Character
         Skills = skills;
         Name = name;
         Role = role;
-        BestPositon = Enumerable.Range(0, 3).Where(x => Skills.All(a => a.UsableFrom.Contains(x))).ToList();
+        BestPositon = Enumerable.Range(0, 3).ToList().Where(x => Skills.All(a => a.UsableFrom.Contains(x))).ToList();
     }
     public Skill GetSkill()
     {

@@ -33,9 +33,17 @@ public class Status
         
         void Bleed(Character obj)
         {
-            int damage = Convert.ToInt32(obj.MaxHp * 0.15);
+            int damage = Convert.ToInt32(obj.MaxHp * 0.2);
             obj.TakeDamage(damage);
             Console.WriteLine($"{obj.Name} bleeding for {damage}");
+            Thread.Sleep(3000);
+        }
+        
+        void Blight(Character obj)
+        {
+            int damage = Convert.ToInt32(obj.MaxHp * 0.1);
+            obj.TakeDamage(damage);
+            Console.WriteLine($"{obj.Name} blighted for {damage}");
             Thread.Sleep(3000);
         }
         
@@ -43,6 +51,12 @@ public class Status
         {
             obj.Initiative += 10;
             obj.Crit += 25;
+        }
+        
+        void VaporsBuff(Character obj)
+        {
+            obj.Initiative += 3;
+            obj.Dmg += Convert.ToInt32(obj.Dmg * 0.75);
         }
         
         void Mark(Character obj) => Console.WriteLine($"{obj.Name} is marked");
@@ -55,11 +69,13 @@ public class Status
         
         AddStatus("stun", 1, Stun, "stun", "is stunned");
         AddStatus("bleed", 2, Bleed, "damage", "is bleeding");
+        AddStatus("blight", 5, Blight, "damage", "is blighted");
         AddStatus("Mark", 2, Mark, "mark", "is marked");
         AddStatus("Riposte", 3, Riposte, "riposte", "is riposting");
         AddStatus("Guard", 3, Guard, "guard", "is guarded");
         AddStatus("Rallybuff", 3, Rallybuff, "agressivebuff", "is empowered", true);
         AddStatus("ArmorBuff", 3, ArmorBuff, "defensivebuff", "is fortyfied", true);
+        AddStatus("VaporsBuff", 3, VaporsBuff, "agressivebuff", "is empowered", true);
     }
 
     private static void AddStatus(string name, int duration, Action<Character> fn, string type, string onapply, bool isinstant = false)

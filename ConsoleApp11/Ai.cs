@@ -19,6 +19,15 @@ public class Ai
         Subject = subject;
     }
 
+    private bool RandomAction()
+    {
+        var skillList = Subject.Skills.Where(x => x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        skill = skillList[new Random().Next(0, skillList.Count)];
+        var targetTeam = skill.UseOnAllies ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList();
+        skill.Use(Subject, skill.Aoe ? targetTeam : new List<Character> {targetTeam[new Random().Next(0, targetTeam.Count)]});
+        return true;
+    }
+
     private bool DealDamage()
     {
         Console.WriteLine("DealDamage");
@@ -92,7 +101,7 @@ public class Ai
         }
         return false;
     }
-    
+
     private bool Heal()
     {
         var skillList = Subject.Skills.Where(x => x.UseOnAllies & x.Damage != 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).OrderBy(a => a.Damage).ToList();
@@ -158,40 +167,37 @@ public class Ai
         }
     }
 
-    // private bool Move()
-    // {
-    //     if (Subject.BestPositon.Contains(Enemies.IndexOf(Subject))) return false;
-    //     {
-    //         List<List<Character>> tempList = new();
-    //         foreach (int move in new [] {-3, -2, -1, 1, 2 ,3 })
-    //         {
-    //             Console.WriteLine(move);
-    //             var enemies  = Program.Game.Enemies;
-    //             foreach (int _ in Enumerable.Range(1, move < 0 ? move * -1 : move ))
-    //             {
-    //                 if (enemies.IndexOf(Subject) == 3 & move > 0 ||
-    //                     enemies.IndexOf(Subject) == 0 & move < 0) { break; }
-    //                 (enemies[enemies.IndexOf(Subject)], enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)]) = (enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)], enemies[enemies.IndexOf(Subject)]);
-    //             }
-    //             tempList.Add(enemies);
-    //             foreach (var i in enemies)
-    //             {
-    //                 Console.WriteLine(i.Name);
-    //             }
-    //             
-    //             Console.WriteLine();
-    //         }
-    //
-    //         foreach (var i in Subject.BestPositon)
-    //         {
-    //             Console.WriteLine(i);
-    //         }
-    //         Console.WriteLine(tempList.Count);
-    //         Program.Game.Enemies = tempList.OrderBy(x => x.Count(a => a.BestPositon.Contains(x.IndexOf(a)))).ToList()[0];
-    //         Console.WriteLine($"{Subject.Name} moved to position {Program.Game.Enemies.IndexOf(Subject) + 1}");
-    //         return true;
-    //     }
-    // }
+    private bool Move()
+    {
+        if (Subject.BestPositon.Contains(Enemies.IndexOf(Subject))) return false;
+        {
+            List<List<Character>> tempList = new();
+            foreach (int move in new [] {-3, -2, -1, 1, 2 ,3 })
+            {
+                var enemies  = Program.Game.Enemies;
+                foreach (int _ in Enumerable.Range(1, move < 0 ? move * -1 : move ))
+                {
+                    if (enemies.IndexOf(Subject) == 3 & move > 0 ||
+                        enemies.IndexOf(Subject) == 0 & move < 0) { break; }
+                    (enemies[enemies.IndexOf(Subject)], enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)]) = (enemies[enemies.IndexOf(Subject) + (move < 0 ? -1 : 1)], enemies[enemies.IndexOf(Subject)]);
+                }
+                tempList.Add(enemies);
+            }
+            foreach (var i in tempList)
+            {
+                foreach (var j in i)
+                {
+                    Console.WriteLine(j.Name);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine(tempList.Count);
+            Program.Game.Enemies = tempList[0];
+            Console.WriteLine($"{Subject.Name} moved to position {Program.Game.Enemies.IndexOf(Subject) + 1}");
+            Console.ReadKey();
+            return true;
+        }
+    }
 
         // private bool Buff()
     // {
@@ -242,7 +248,14 @@ public class Ai
         _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, TargetLowHp, Riposte, DealDamage});
         _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {LastHit, Mark, Heal, TargetLowHp, DealDamage});
         _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {LastHit, TargetMark, TargetLowHp, DealDamage});
-        foreach (Func<bool> _ in _patternList[Subject.Name].Where(i => i()))
-            break;
+        if (Misc.Roll(Program.Difficulty))
+        {
+            foreach (Func<bool> _ in _patternList[Subject.Name].Where(i => i()))
+                break;
+        }
+        else
+        {
+            RandomAction();
+        }
     }
 }

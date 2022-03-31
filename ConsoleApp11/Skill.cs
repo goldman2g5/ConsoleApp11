@@ -15,13 +15,14 @@ public class Skill
     public bool MarkDamage;
     public bool BuffSelf;
     public int Move;
+    public int MoveSelf;
     public List<int> Targets = new() {0, 1, 2, 3};
     public List<int> UsableFrom = new() {0, 1, 2, 3};
     public List<Status> StatusList = new();
 
     public Skill(string name, double damage = 0, List<int>? targets = null, List<Status>? statusList = null,
         List<int>? usablefrom = null, bool useonaliies = false, bool useonself = false, bool aoe = false, bool markdamage = false,
-        bool buffself = false, bool isMoveSkill = false, int move = 0)
+        bool buffself = false, bool isMoveSkill = false, int move = 0, int moveself = 0)
     {
         Damage = damage;
         Name = name;
@@ -37,6 +38,7 @@ public class Skill
         BuffSelf = buffself;
         Aoe = aoe;
         Move = move;
+        MoveSelf = moveself;
         IsMoveSkill = isMoveSkill;
     }
 
@@ -149,6 +151,20 @@ public class Skill
                             if (targetTeam.IndexOf(target) == 3 & Move > 0 ||
                                 targetTeam.IndexOf(target) == 0 & Move < 0) { break; }
                             (targetTeam[targetTeam.IndexOf(target)], targetTeam[targetTeam.IndexOf(target) + (Move < 0 ? -1 : 1)]) = (targetTeam[targetTeam.IndexOf(target) + (Move < 0 ? -1 : 1)], targetTeam[targetTeam.IndexOf(target)]);
+                        }
+                    }
+                    
+                    if (MoveSelf == 0) continue;
+                    {
+                        Console.WriteLine($"{subject.Name} is " + (MoveSelf > 0 ? "Moves back " : "Moves forward ") + "by " + (MoveSelf > 0 ? $"{MoveSelf}" : $"{MoveSelf * -1}"));
+                        ref var allies = ref Program.Game.Allies;
+                        ref var enemies = ref Program.Game.Enemies;
+                        var targetTeam = Program.Game.Allies.Contains(subject) ? allies : enemies;
+                        foreach (int i in Enumerable.Range(1, MoveSelf < 0 ? MoveSelf * -1 : MoveSelf ))
+                        {
+                            if (targetTeam.IndexOf(subject) == 3 & Move > 0 ||
+                                targetTeam.IndexOf(subject) == 0 & Move < 0) { break; }
+                            (targetTeam[targetTeam.IndexOf(subject)], targetTeam[targetTeam.IndexOf(subject) + (Move < 0 ? -1 : 1)]) = (targetTeam[targetTeam.IndexOf(subject) + (Move < 0 ? -1 : 1)], targetTeam[targetTeam.IndexOf(subject)]);
                         }
                     }
                     
