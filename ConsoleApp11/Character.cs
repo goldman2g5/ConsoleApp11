@@ -110,6 +110,6 @@ public class Character
 
     public int GetEhp()
     {
-        return Convert.ToInt32(Hp * (1.0 - Armor) * (1.0 - Dodge));
+        return Convert.ToInt32(Hp * (1.0 - Armor));
     }
 }

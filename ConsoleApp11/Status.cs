@@ -10,9 +10,10 @@ public class Status
     public bool IsInstant;
     public string Type;
     public string OnApply;
+    public Func<Character, double> StatAffected;
     private static Dictionary<string, Status> StatusList = new();
 
-    private Status(string name, int duration, Action<Character> fn, string type, string onapply, bool isInstant = false)
+    private Status(string name, int duration, Action<Character> fn, string type, string onapply, bool isInstant = false, Func<Character, double>? affectstat = null)
     {
         Name = name;
         Fn = fn;
@@ -20,10 +21,23 @@ public class Status
         Type = type;
         IsInstant = isInstant;
         OnApply = onapply;
+        if (affectstat != null)
+            StatAffected = affectstat;
     }
 
     public static void GenerateStatuses()
     {
+        
+        double Dodge(Character obj)
+        {
+            return obj.Dodge;
+        }
+        
+        double Dmg(Character obj)
+        {
+            return obj.Dmg;
+        }
+        
         void Stun(Character obj)
         {
             obj.Stunned = true;
@@ -67,20 +81,23 @@ public class Status
         
         void ArmorBuff(Character obj) => obj.Armor += 0.2;
         
+        void DodgeDeBuff(Character obj) => obj.Dodge -= 0.2;
+
         AddStatus("stun", 1, Stun, "stun", "is stunned");
         AddStatus("bleed", 2, Bleed, "damage", "is bleeding");
         AddStatus("blight", 5, Blight, "damage", "is blighted");
         AddStatus("Mark", 2, Mark, "mark", "is marked");
         AddStatus("Riposte", 3, Riposte, "riposte", "is riposting");
         AddStatus("Guard", 3, Guard, "guard", "is guarded");
-        AddStatus("Rallybuff", 3, Rallybuff, "agressivebuff", "is empowered", true);
-        AddStatus("ArmorBuff", 3, ArmorBuff, "defensivebuff", "is fortyfied", true);
-        AddStatus("VaporsBuff", 3, VaporsBuff, "agressivebuff", "is empowered", true);
+        AddStatus("Rallybuff", 3, Rallybuff, "abuff", "is empowered", true);
+        AddStatus("ArmorBuff", 3, ArmorBuff, "dbuff", "is fortyfied", true);
+        AddStatus("DodgeDeBuff", 3, DodgeDeBuff, "ddbuff", "is crippled", true, Dodge);
+        AddStatus("VaporsBuff", 3, VaporsBuff, "abuff", "is empowered", true);
     }
 
-    private static void AddStatus(string name, int duration, Action<Character> fn, string type, string onapply, bool isinstant = false)
+    private static void AddStatus(string name, int duration, Action<Character> fn, string type, string onapply, bool isinstant = false, Func<Character, double>? affectsatat = null)
     {
-        var statusToAdd = new Status(name, duration, fn, type, onapply, isinstant);
+        var statusToAdd = new Status(name, duration, fn, type, onapply, isinstant, affectsatat);
         StatusList.Add(statusToAdd.Name, statusToAdd);
     }
 

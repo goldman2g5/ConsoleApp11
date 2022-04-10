@@ -19,18 +19,16 @@ public class Ai
         Subject = subject;
     }
 
-    private bool RandomAction()
+    private void RandomAction()
     {
         var skillList = Subject.Skills.Where(x => x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
         skill = skillList[new Random().Next(0, skillList.Count)];
         var targetTeam = skill.UseOnAllies ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : Allies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList();
         skill.Use(Subject, skill.Aoe ? targetTeam : new List<Character> {targetTeam[new Random().Next(0, targetTeam.Count)]});
-        return true;
     }
 
     private bool DealDamage()
     {
-        Console.WriteLine("DealDamage");
         var skillList = Subject.Skills.Where(x => !x.UseOnAllies & x.Damage != 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
         if (!skillList.Any()) return false;
         {
@@ -45,7 +43,6 @@ public class Ai
 
     private bool TargetLowHp()
     {
-        Console.WriteLine("Lasthit");
         var targetList = Allies.Where(x => x.Hp < x.MaxHp * 0.5).OrderBy(a => a.Hp * (1.0 - a.Armor) * (1.0 - (a.Dodge + Subject.Acc * 0.01))).ToList();
         var skillList = Subject.Skills.Where(a => !a.UseOnAllies & a.Damage != 0 & a.UsableFrom.Contains(Enemies.IndexOf(Subject))).OrderByDescending(a => a.Damage).ToList();
         if (!targetList.Any()) return false;
@@ -66,7 +63,6 @@ public class Ai
     
     private bool LastHit()
     {
-        Console.WriteLine("Lasthit");
         foreach (var i in Allies)
         {
             foreach (var j in Subject.Skills.Where(j => (i.Hp * (1.0 - i.Armor)) - (Subject.Dmg * j.Damage) < 0 & j.UsableFrom.Contains(Enemies.IndexOf(Subject)) & j.Targets.Contains(Allies.IndexOf(i))).OrderByDescending(x => x.Damage))
@@ -105,14 +101,30 @@ public class Ai
     private bool Heal()
     {
         var skillList = Subject.Skills.Where(x => x.UseOnAllies & x.Damage != 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).OrderBy(a => a.Damage).ToList();
-        if (!skillList.Any() & !Enemies.Any(x => x.Hp < x.MaxHp * 0.5)) return false;
+            if (skillList.Any() & Enemies.Any(x => x.Hp < x.MaxHp * 0.5))
+            {
+                skill = skillList.OrderBy(a => a.Damage).ToList()[0];
+                target = new List<Character> {Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).OrderBy(x => x.Hp).ToList()[0]};
+                skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
+                return true;
+            }
+
+            return false;
+    }
+    
+    private bool Guard()
+    {
+        var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "guard") & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        if (skillList.Any() & Enemies.Any(x => x.Hp < x.MaxHp * 0.5))
         {
+            skill = skillList.OrderBy(a => a.Damage).ToList()[0];
             target = new List<Character> {Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).OrderBy(x => x.Hp).ToList()[0]};
-            skill = skillList.Where(x => skill.Targets.Contains(Allies.IndexOf(target[0]))).OrderBy(a => a.Damage).ToList()[0];
             skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
             return true;
         }
+        return false;
     }
+    
 
     private bool Mark()
     {
@@ -156,8 +168,8 @@ public class Ai
 
     private bool Riposte()
     {
-        var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "riposte")).ToList();
-        if (!skillList.Any()) return false;
+        var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "riposte") & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        if (!skillList.Any() & Subject.StatusList.All(x => x.Type != "riposte")) return false;
         {
             skill = skillList[new Random().Next(0, skillList.Count)];
             if (Subject.StatusList.Any(a => a.Type == "riposte")) return false;
@@ -199,55 +211,131 @@ public class Ai
         }
     }
 
-        // private bool Buff()
-    // {
-    //     Console.WriteLine("Buff");
-    //     var skillListA = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "agressivebuff") & x.UseOnAllies)
-    //         .ToList();
-    //     var skillListD = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "defensivebuff") & x.UseOnAllies)
-    //         .ToList();
-    //     if (skillListA.Any())
-    //     {
-    //         skill = skillListA[new Random().Next(0, skillListA.Count)];
-    //         if (Enemies.Any(x =>
-    //                 x.StatusList.All(a => a.Type != "agressivebuff") & x.Role == "DD" &
-    //                 skill.Targets.Contains(Enemies.IndexOf(x))))
-    //         {
-    //             var targetList = Enemies.Where(x =>
-    //                 x.StatusList.All(a => a.Type != "agressivebuff") & x.Role == "DD" &
-    //                 skill.Targets.Contains(Enemies.IndexOf(x))).ToList();
-    //             target = new List<Character> {targetList.OrderByDescending(x => x.Dmg).ToList()[0]};
-    //             target = skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : target;
-    //             skill.Use(Subject, target);
-    //             return true;
-    //         }
-    //     }
-    //
-    //     if (!skillListD.Any()) return false;
-    //     {
-    //         skill = skillListD[new Random().Next(0, skillListD.Count)];
-    //         if (!Enemies.Any(x =>
-    //                 x.StatusList.Any(a => a.Type != "defensivebuff" & x.Role == "Tank") &
-    //                 skill.Targets.Contains(Enemies.IndexOf(x)))) return false;
-    //         {
-    //             var targetList = Enemies.Where(x =>
-    //                 x.StatusList.All(a => a.Type != "defensivebuff") & x.Role == "Tank" &
-    //                 skill.Targets.Contains(Enemies.IndexOf(x))).ToList();
-    //             target = new List<Character> {targetList.OrderByDescending(x => x.Hp).ToList()[0]};
-    //             target = skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : target;
-    //             skill.Use(Subject, target);
-    //             return true;
-    //         }
-    //     }
-    //
-    // }
+    private bool Buff()
+    {
+        var skillList = Subject.Skills.Where(x => (x.StatusList.Any(a => a.Type == "abuff") || x.StatusList.Any(a => a.Type == "dbuff")) & x.UsableFrom.Contains(Enemies.IndexOf(Subject)) & x.UseOnAllies).ToList();
+        if (!skillList.Any()) return false;
+        {
+            foreach (var i in skillList)
+            {
+                skill = i;
+                var targetList = Enemies.Where(x => x.StatusList.All(a => i.StatusList.Any(b => b.Type != a.Type)) & skill.Targets.Contains(Enemies.IndexOf(x))).ToList();
+                targetList = i.StatusList.Any(x => x.Type == "abuff")
+                    ? targetList.OrderByDescending(x => x.Skills.Any(a => a.MarkDamage)).ThenByDescending(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "riposte"))).ThenByDescending(x => x.Role == "D").ThenByDescending(x => x.Role == "T").ToList()
+                    : targetList.OrderByDescending(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "guard"))).ThenByDescending(x => x.Role == "D").ThenByDescending(x => x.Role == "T").ToList();
+                if (targetList.Any())
+                {
+                    skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : new List<Character> {targetList[0]});
+                } 
+                return true;
+            }
+
+            return false;
+        }
+    }
     
+    private bool DeBuff()
+    {
+        var skillList = Subject.Skills.Where(x => (x.StatusList.Any(a => a.Type == "adbuff") || x.StatusList.Any(a => a.Type == "ddbuff")) & x.UsableFrom.Contains(Enemies.IndexOf(Subject))).ToList();
+        Console.WriteLine(skillList.Any());
+        if (!skillList.Any()) return false;
+        {
+            foreach (var i in skillList)
+            {
+                skill = i;
+                var targetList = Allies.Where(x => x.StatusList.All(a => i.StatusList.Any(b => b.Type != a.Type)) & skill.Targets.Contains(Allies.IndexOf(x))).OrderByDescending(x => i.StatusList[0].StatAffected(x)).ToList();
+                if (targetList.Any())
+                {
+                    skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Allies.IndexOf(x))).ToList() : new List<Character> {targetList[0]});
+                } 
+                return true;
+            }
+
+            return false;
+        }
+    }
+    
+    // private bool Save()
+    // {
+    //     var saveTargets = Enemies.Where(x => Allies.Any(a => a.Skills.Any(b => x.Hp <= a.Dmg * b.Damage & b.UsableFrom.Contains(Enemies.IndexOf(a)) & b.Targets.Contains(Enemies.IndexOf(x)) & !b.UseOnAllies))).OrderByDescending(x => x.Skills.Any(a => a.StatusList.Any(b => b.Type == "guard"))).ThenByDescending(a => a.Skills.Any(x => x.Damage != 0 & x.UseOnAllies)).ThenByDescending(x => x.Role == "D").ThenByDescending(x => x.Role == "T").ToList();
+    //     Console.WriteLine(saveTargets.Any());
+    //
+    //     bool Guard()
+    //     {
+    //         var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "guard") & x.UsableFrom.Contains(Enemies.IndexOf(Subject)) & x.UseOnAllies).ToList();
+    //         if (!skillList.Any()) return false;
+    //         skill.Use(Subject, target);
+    //         return true;
+    //     }
+    //
+    //     bool HealS()
+    //     {
+    //         var skillList = Subject.Skills.Where(x => x.Damage != 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject)) & x.UseOnAllies).ToList();
+    //         if (!skillList.Any()) return false;
+    //         skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
+    //         return true;
+    //     }
+    //     
+    //     bool BuffS()
+    //     {
+    //         var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "dbuff") & x.UseOnAllies).ToList();
+    //         if (!skillList.Any()) return false;
+    //         skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
+    //         return true;
+    //     }
+    //
+    //     bool Stun()
+    //     {
+    //         var targetList = Allies.Where(x => Enemies.Any(a => x.Skills.Any(b =>
+    //             a.GetEhp() - x.Dmg * b.Damage >= 0 & b.UsableFrom.Contains(Enemies.IndexOf(a)) &
+    //             b.Targets.Contains(Enemies.IndexOf(a)) & !b.UseOnAllies))).ToList();
+    //         targetList = targetList.Where(x => Game.TurnOrder.Contains(x))
+    //             .OrderByDescending(x => Game.TurnOrder.IndexOf(x) - Game.TurnOrder.IndexOf(saveTargets[0]))
+    //             .Union(targetList.Where(x => !Game.TurnOrder.Contains(x)).OrderByDescending(x => x.Initiative))
+    //             .ToList();
+    //         target = new List<Character>() {targetList[0]};
+    //
+    //     var skillList = Subject.Skills.Where(x => x.StatusList.Any(a => a.Type == "stun") & x.UsableFrom.Contains(Enemies.IndexOf(Subject)) & x.Targets.Contains(Enemies.IndexOf(target[0]))).ToList();
+    //         if (!skillList.Any()) return false;
+    //         skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
+    //         return true;
+    //     }
+    //     
+    //     bool Kill()
+    //     {
+    //         var targetList = Allies.Where(x => Enemies.Any(a => x.Skills.Any(b => a.GetEhp() - x.Dmg * b.Damage >= 0 & b.UsableFrom.Contains(Enemies.IndexOf(a)) & b.Targets.Contains(Enemies.IndexOf(a)) & !b.UseOnAllies))).ToList();
+    //         targetList = targetList.Where(x => Game.TurnOrder.Contains(x)).OrderByDescending(x => Game.TurnOrder.IndexOf(x) - Game.TurnOrder.IndexOf(saveTargets[0])).Union(targetList.Where(x => !Game.TurnOrder.Contains(x)).OrderByDescending(x => x.Initiative)).ToList();
+    //         foreach (var i in targetList)
+    //         {
+    //             var skillList = Subject.Skills.Where(x => target[0].GetEhp() - Subject.Dmg * x.Damage <= 0 & x.UsableFrom.Contains(Enemies.IndexOf(Subject)) & x.Targets.Contains(Enemies.IndexOf(i))).ToList();
+    //             if (!skillList.Any()) continue;
+    //             {
+    //                 skill.Use(Subject, skill.Aoe ? Enemies.Where(x => skill.Targets.Contains(Enemies.IndexOf(x))).ToList() : target);
+    //                 return true;
+    //             }
+    //         }
+    //
+    //         return false;
+    //     }
+    //     
+    //     Console.WriteLine("save");
+    //     foreach (var i in saveTargets)
+    //     {
+    //         target = new List<Character>() {i};
+    //         foreach (var j in new List<Func<bool>> {Kill, Guard, Stun, HealS, BuffS}.Where(j => j()))
+    //         { 
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
+
     public void Act()
     {
-        _patternList.Add("Skeleton Veteran", new List<Func<bool>>() {LastHit, TargetLowHp, Control, DealDamage});
-        _patternList.Add("Skeleton Spearman", new List<Func<bool>>() {LastHit, TargetLowHp, Riposte, DealDamage});
-        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>>() {LastHit, Mark, Heal, TargetLowHp, DealDamage});
-        _patternList.Add("Skeleton Crossbowman", new List<Func<bool>>() {LastHit, TargetMark, TargetLowHp, DealDamage});
+        _patternList.Add("Skeleton Veteran", new List<Func<bool>> {Guard, LastHit, TargetLowHp, Control, DealDamage});
+        _patternList.Add("Skeleton Spearman", new List<Func<bool>> {LastHit, TargetLowHp, Riposte, DealDamage});
+        _patternList.Add("Skeleton Banner Lord", new List<Func<bool>> {DeBuff, LastHit, Heal, Mark, Buff, TargetLowHp, DealDamage});
+        _patternList.Add("Skeleton Crossbowman", new List<Func<bool>> {LastHit, TargetMark, TargetLowHp, DealDamage});
         if (Misc.Roll(Program.Difficulty))
         {
             foreach (Func<bool> _ in _patternList[Subject.Name].Where(i => i()))

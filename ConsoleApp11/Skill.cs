@@ -53,7 +53,7 @@ public class Skill
                 damageDealt = Damage == 0 ? 0 : Convert.ToInt32(subject.Hp * 0.25 * Damage);
                 target.Heal(damageDealt);
                 Console.WriteLine(damageDealt != 0
-                    ? $"{subject.Name} using {Name} healed {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}"
+                    ? $"{subject.Name} using {Name} healed {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}/{target.MaxHp}"
                     : $"{subject.Name} using {Name} to {target.Name}");
                 Thread.Sleep(3000);
                 foreach (var i in StatusList)
@@ -119,12 +119,11 @@ public class Skill
                     }
 
                     target.TakeDamage(damageDealt);
-                    Console.WriteLine(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}" : "");
+                    Console.Write(damageDealt != 0 ? $"{subject.Name} dealt {damageDealt} to {target.Name}\n{target.Name} Hp: {target.Hp}/{target.MaxHp}\n" : "");
                     Thread.Sleep(3000);
-                    if (target.StatusList.Any(x => x.Type == "riposte"))
+                    if (target.StatusList.Any(x => x.Type == "riposte") & Name != "riposte attack")
                     {
-                        new Skill("riposte attack", 1, new List<int> {0, 1, 2, 3}, new List<Status>()).Use(target,
-                            new List<Character>() {subject});
+                        new Skill("riposte attack", 0.67).Use(target, new List<Character>() {subject});
                     }
 
                     foreach (var i in StatusList)
